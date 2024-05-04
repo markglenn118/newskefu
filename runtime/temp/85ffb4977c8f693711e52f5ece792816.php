@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:94:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/service\view\services\index.html";i:1714145448;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:94:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/service\view\services\index.html";i:1714823277;}*/ ?>
 
 <!DOCTYPE html>
 <html>
@@ -69,6 +69,8 @@
 
 		<script type="text/html" id="tool-bar">
 			<button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="code">查看</button>
+            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="reset">重置</button>
 			<button class="pear-btn pear-btn-success pear-btn-xs" lay-event="pass"><i class="layui-icon layui-icon-password"></i>密码</button>
 			<button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>删除</button>
 			<button class="pear-btn pear-btn-xs copy" lay-event="copy" data-clipboard-text="{{d.personal}}"><i class="layui-icon layui-icon-link"></i>复制链接</button>
@@ -102,6 +104,11 @@
                             }, {
                                 field: 'nick_name',
                                 title: '昵称',
+                                unresize: true,
+                                align: 'left',
+                            }, {
+                                field: 'another_name',
+                                title: '谷歌别名',
                                 unresize: true,
                                 align: 'left',
                             },  {
@@ -164,6 +171,10 @@
                         window.copy(obj);
                     }else if (obj.event === 'remove') {
                         window.remove(obj);
+                    }else if (obj.event === 'code') {
+                        window.code(obj);
+                    }else if (obj.event === 'reset') {
+                        window.reset(obj);
                     }
                 });
 
@@ -191,7 +202,24 @@
                         }
                     });
                 });
-
+                window.reset = function(obj) {
+                    layer.open({
+                        type: 2,
+                        title: '重置谷歌验证码',
+                        shade: 0.1,
+                        area: ['500px', '500px'],
+                        content: MODULE_PATH + 'services/reset?service_id='+obj.data.service_id
+                    });
+                };
+                window.code = function(obj) {
+                    layer.open({
+                        type: 2,
+                        title: '谷歌验证码',
+                        shade: 0.1,
+                        area: ['500px', '500px'],
+                        content: MODULE_PATH + 'services/code?service_id='+obj.data.service_id
+                    });
+                };
 				window.add = function(obj) {
                     layer.open({
                         type: 2,

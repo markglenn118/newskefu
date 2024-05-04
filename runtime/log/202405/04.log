@@ -16,3 +16,21 @@
 ---------------------------------------------------------------
 [ 2024-05-04T19:21:22+08:00 ] 127.0.0.1 GET www.test.cn/service/index/index.html
 [ error ] [8]Array to string conversion
+---------------------------------------------------------------
+[ 2024-05-04T19:57:51+08:00 ] 127.0.0.1 POST www.test.cn/service/services/reset?service_id=3
+[ error ] [8]未定义数组索引: another_name
+---------------------------------------------------------------
+[ 2024-05-04T19:57:54+08:00 ] 127.0.0.1 POST www.test.cn/service/services/reset?service_id=3
+[ error ] [8]未定义数组索引: another_name
+---------------------------------------------------------------
+[ 2024-05-04T19:57:55+08:00 ] 127.0.0.1 POST www.test.cn/service/services/reset?service_id=3
+[ error ] [8]未定义数组索引: another_name
+---------------------------------------------------------------
+[ 2024-05-04T19:57:55+08:00 ] 127.0.0.1 POST www.test.cn/service/services/reset?service_id=3
+[ error ] [8]未定义数组索引: another_name
+---------------------------------------------------------------
+[ 2024-05-04T19:57:55+08:00 ] 127.0.0.1 POST www.test.cn/service/services/reset?service_id=3
+[ error ] [8]未定义数组索引: another_name
+---------------------------------------------------------------
+[ 2024-05-04T19:58:11+08:00 ] 127.0.0.1 POST www.test.cn/service/services/reset?service_id=3
+[ error ] [8]未定义数组索引: another_name

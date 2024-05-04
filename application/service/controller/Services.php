@@ -7,7 +7,7 @@ use app\service\model\Service;
 use think\Db;
 use app\service\model\Business;
 use think\File;
-
+use think\Loader;
 /**
  *
  * 后台页面控制器.
@@ -113,5 +113,40 @@ class Services extends Base
         $id = $this->request->get('service_id');
         if (Service::destroy(['service_id' => $id,'business_id'=>$_SESSION['Msg']['business_id']])) $this->success('操作成功！');
         $this->error('操作失败！');
+    }
+    public function code(){
+        
+        $service = Service::where('service_id',$this->request->get('service_id'))->find();
+        if($service['google_url']){
+            $google_url = $service['google_url'];
+        }else{
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            //生成秘钥
+            $secret = $Googl->createSecret();
+            $nickname = !empty($service['another_name']) ? $service['another_name'] : $service['user_name'];
+            $google_url = $Googl->getQRCodeGoogleUrl($nickname,$secret);
+            Service::where("service_id",$this->request->get('service_id'))->update(['google_secret'=>$secret,'another_name'=>$nickname,'google_url'=>$google_url]);
+        }
+        $this->assign('google_url', $google_url);
+        return $this->fetch();
+    }
+    public function reset(){
+        if ($this->request->isAjax()) {
+            $post = $this->request->post();
+            $service = Service::where('service_id',$this->request->get('service_id'))->find();
+            if(!$service){
+                $this->error('数据不存在');
+            }
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            $secret = $Googl->createSecret();
+            $google_url = $Googl->getQRCodeGoogleUrl(trim($post['nickname']),$secret);
+            if(Service::where("service_id",$this->request->get('service_id'))->update(['google_url'=>$google_url,'google_secret'=>$secret,'another_name'=>trim($post['nickname'])])){
+                $this->success('重置谷歌验证码成功');
+            }
+            $this->error('修改失败！');
+        }
+        return $this->fetch();
     }
 }

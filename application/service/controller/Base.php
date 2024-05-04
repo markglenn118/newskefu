@@ -57,7 +57,7 @@ class Base extends Controller
             if($serviceInfo['random_number'] != $_SESSION['random_number']){
                 $_SESSION['Msg'] = null;
                 $_SESSION['random_number'] = null;
-                Cookie::set('service_token','');
+                Cookie::delete('service_token');
 
             }
         }
