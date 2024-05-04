@@ -28,7 +28,7 @@ class Base extends Controller
     {
         
 		 parent::_initialize();
-        if (empty($_SESSION['Msg']) || !isset($_SESSION['Msg'])) {
+        if (empty($_SESSION['Msg']) || !isset($_SESSION['Msg']) ||empty($_SESSION['random_number'])) {
             
             $token = Cookie::get('service_token');
             if (!$token) {
@@ -49,9 +49,10 @@ class Base extends Controller
                 $this->open_id= $_SESSION['Msg']['open_id'];
             }
         }else{
-            
+           
             $serviceInfo=db('wolive_service')->field('open_id,random_number')->where(['service_id'=>$_SESSION['Msg']['service_id']])->find();
-            if($serviceInfo){
+           
+           if($serviceInfo){
                 $this->open_id=$serviceInfo['open_id'];
             }
             if($serviceInfo['random_number'] != $_SESSION['random_number']){

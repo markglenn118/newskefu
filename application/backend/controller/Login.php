@@ -10,6 +10,7 @@ namespace app\backend\controller;
 
 use think\Controller;
 use think\config;
+use app\Common;
 use think\captcha\Captcha;
 use app\backend\model\Admins;
 
@@ -43,9 +44,13 @@ class Login extends Controller
             if (!$admin) $this->error('登录用户名或密码错误');
             // 获取登陆数据
             $login = $admin->getData();
+            $common = new Common();
+            $random_number = $common->randString();
+            Admins::table("wolive_admin")->where("id",$login['id'])->update(['random_number'=>$random_number]);
             // 设置session标识状态
             session('admin_user_name', $login['username']);
             session('admin_user_id', $login['id']);
+            session('random_number', $random_number);
             $this->success('登录成功', url("/backend/index/index"));
         }
     }

@@ -112,14 +112,14 @@ class Login extends Controller
         }
         // 删掉登录用户的敏感信息
         unset($login['password']);
+        $common = new Common();
         //获取随机数
-        $random_number = $this->randString();
+        $random_number = $common->randString();
         $res = Admins::table('wolive_service')->where('service_id', $login['service_id'])->update(['state' => 'online','random_number'=>$random_number]);
         $_SESSION['Msg'] = $login;
         $business = Business::get($_SESSION['Msg']['business_id']);
         $_SESSION['Msg']['business'] = $business->getData();
         $_SESSION['random_number'] = $random_number;
-        $common = new Common();
         $expire = 7 * 24 * 60 * 60;
         $service_token = $common->cpEncode($login['user_name'], AIKF_SALT, $expire);
         Cookie::set('service_token', $service_token, $expire);
@@ -215,26 +215,6 @@ class Login extends Controller
         );
         $data = $pusher->socket_auth($_POST['channel_name'], $_POST['socket_id']);
         return $data;
-    }
-    //随机数
-    function randString() {
-        $code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $rand = $code[rand(0,25)]
-            .strtoupper(dechex(date('m')))
-            .date('d').substr(time(),-5)
-            .substr(microtime(),2,5)
-            .sprintf('%02d',rand(0,99));
-        for(
-            $a = md5( $rand, true ),
-            $s = '0123456789ABCDEFGHIJKLMNOPQRSTUV',
-            $d = '',
-            $f = 0;
-            $f < 8;
-            $g = ord( $a[ $f ] ),
-            $d .= $s[ ( $g ^ ord( $a[ $f + 8 ] ) ) - $g & 0x1F ],
-            $f++
-        );
-        return  $d;
     }
     public function reg(){
         if(Cookie::get('service_token')) $this->redirect(url('/service/index'));

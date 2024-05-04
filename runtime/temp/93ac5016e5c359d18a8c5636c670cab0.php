@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:91:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/backend\view\login\index.html";i:1714818369;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:91:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/backend\view\login\index.html";i:1714819760;}*/ ?>
 
 <!DOCTYPE html>
 <html>
@@ -123,9 +123,6 @@
   <div class="layui-form-item">
     <input placeholder="请输入验证码"  lay-verify="required" type="text" class="code layui-input layui-input-inline" name="captcha" autocomplete="off"/>
     <img src="<?php echo url('captcha'); ?>" class="codeImage" id="codeimg"/>
-  </div>
-  <div class="layui-form-item">
-    <input placeholder="谷歌验证码"  type="password" class="layui-input" name="google_code" autocomplete="off" />
   </div>
   <div class="layui-form-item">
     <button type="button" class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
