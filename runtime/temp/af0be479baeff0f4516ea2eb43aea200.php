@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:93:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/service\view\setting\index.html";i:1714145448;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:85:"C:\Users\13424\Desktop\WWW\kefu\public/../application/service\view\setting\index.html";i:1714829877;}*/ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,7 +67,7 @@
                 <div class="layui-input-inline">
                     <select name="lang" lay-verify="required">
                         <option value="">请选择默认语言</option>
-                        <?php $_6636199505ce4=config('lang'); if(is_array($_6636199505ce4) || $_6636199505ce4 instanceof \think\Collection || $_6636199505ce4 instanceof \think\Paginator): if( count($_6636199505ce4)==0 ) : echo "" ;else: foreach($_6636199505ce4 as $key=>$vo): ?>
+                        <?php $_66364a1ce0fdc=config('lang'); if(is_array($_66364a1ce0fdc) || $_66364a1ce0fdc instanceof \think\Collection || $_66364a1ce0fdc instanceof \think\Paginator): if( count($_66364a1ce0fdc)==0 ) : echo "" ;else: foreach($_66364a1ce0fdc as $key=>$vo): ?>
                         <option value="<?php echo $key; ?>" <?php if($business['lang'] == $key): ?>selected<?php endif; ?>><?php echo $vo; ?></option>
                         <?php endforeach; endif; else: echo "" ;endif; ?>
                     </select>

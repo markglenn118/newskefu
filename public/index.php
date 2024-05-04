@@ -30,15 +30,15 @@ define('CONF_PATH', __DIR__ . '/../config/');
 
 
 // 定义pusher密匙
-define('app_key','jbktpwaf4qwtppgl');
-define('app_secret','lef6pg66gz5sybl4dqfmf1xlrb9635r6');
+define('app_key','tjawfoxkc2hsr4k9');
+define('app_secret','ykne5lhnaq6igu7fmupva5gv6sjkf4vh');
 define('app_id',232);
-define('whost','wss://chate.uincloud.cn');
-define('ahost','http://chate.uincloud.cn');
-define('wport',443);
+define('whost','ws://www.kefu.cn');
+define('ahost','http://www.kefu.cn');
+define('wport',9090);
 define('aport',2080);
-define('registToken','1698688094');
-define('AIKF_SALT','hjrupv7dlvnl0b0vvq');
+define('registToken','1190672203');
+define('AIKF_SALT','aio3anna21tmf8l7qq');
 define('AKF_VERSION','AI_KF');
 
 // 自定义一个 入口 目录
@@ -50,7 +50,7 @@ define('EXTEND_PATH','../extend/');
 define('appid','');
 define('appsecret','');
 define('token','');
-define('domain','http://chate.uincloud.cn');
+define('domain','http://www.kefu.cn');
 
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';

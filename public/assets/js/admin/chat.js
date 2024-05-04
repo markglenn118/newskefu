@@ -272,7 +272,8 @@ var send = function () {
         str += '<li class="chatmsg" id="xiaox_'+unstr+'"><div class="showtime">' + time + '</div>';
         str += '<div style="position: absolute;top: 26px;right: 0px;"><img  class="my-circle se_pic" src="' + pic + '" width="50px" height="50px"></div>';
         str += "<div class='outer-right' ><div class='service'>";
-        str += "<pre>" + msg + "&nbsp;&nbsp;<span onclick=revoke('" + unstr + "',2); class='revoke-text'>撤销</span></pre>";
+        // str += "<pre>" + msg + "&nbsp;&nbsp;<span onclick=revoke('" + unstr + "',2); class='revoke-text'>111撤销</span></pre>";
+        str += "<pre>" + msg + "</pre>";
         str += "</div></div>";
         str += "</li>";
         $(".conversation").append(str);

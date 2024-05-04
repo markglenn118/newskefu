@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:90:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/service\view\chat\index.html";i:1714145448;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:82:"C:\Users\13424\Desktop\WWW\kefu\public/../application/service\view\chat\index.html";i:1714829877;}*/ ?>
 <link href="/assets/libs/layui/css/layui.css" rel="stylesheet">
 <link href="/assets/libs/amaze/css/amazeui.min.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="/assets/libs/jquery/jquery.min.js"></script>

@@ -2116,6 +2116,7 @@ class Set extends Base
 
     //后台客服撤销内容
     public function revokemsg(){
+        return ['code' =>1, 'msg' => '无法撤销'];
         $id = $this->request->post('id','','trim');
         $type = $this->request->post('type','','trim');
 

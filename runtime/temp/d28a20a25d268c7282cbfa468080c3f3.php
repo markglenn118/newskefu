@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:70:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/404.html";i:1714145448;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:62:"C:\Users\13424\Desktop\WWW\kefu\public/../application/404.html";i:1714829877;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>

@@ -459,7 +459,8 @@ function getdata() {
                         str += '<li class="chatmsg" id="xiaox_'+v.cid+'"><div class="showtime">' + showtime + '</div>';
                         str += '<div class="" style="position: absolute;top: 26px;right: 5px;"><img  class="my-circle cu_pic" src="' + v.avatar + '" width="40px" height="40px"></div>';
                         str += "<div class='outer-right'><div class='service'>";
-                        str += "<pre>" + v.content + "&nbsp;&nbsp;<span onclick='revoke("+v.cid+",1);' class='revoke-text'>(撤销)</span></pre>";
+                        //str += "<pre>" + v.content + "&nbsp;&nbsp;<span onclick='revoke("+v.cid+",1);' class='revoke-text'>(撤销)</span></pre>";
+                        str += "<pre>" + v.content + "</pre>";
                         str += "</div></div>";
                         str += "</li>";
 
@@ -860,7 +861,8 @@ var send = function() {
         str += '<li class="chatmsg" id="xiaox_'+unstr+'"><div class="showtime">' + time + '</div>';
         str += '<div style="position: absolute;top: 26px;right: 2px;"><img  class="my-circle se_pic" src="' + imghead + '" width="40px" height="40px"></div>';
         str += "<div class='outer-right'><div class='service'>";
-        str += "<pre>" + msg + "&nbsp;&nbsp;<span onclick=revoke('" + unstr + "',2); class='revoke-text'>(撤销)</span></pre>";
+        //str += "<pre>" + msg + "&nbsp;&nbsp;<span onclick=revoke('" + unstr + "',2); class='revoke-text'>(撤销)</span></pre>";
+        str += "<pre>" + msg + "</pre>";
         str += "</div></div>";
         str += "</li>";
 

@@ -439,7 +439,8 @@ function getdata(cha) {
                         }
 
                         str += "<div class='outer-right'><div class='service'>";
-                        str += "<pre>" + v.content + "&nbsp;&nbsp;<span onclick='revoke("+v.cid+",1);' class='revoke-text'>撤销</span></pre>";
+                        //str += "<pre>" + v.content + "&nbsp;&nbsp;<span onclick='revoke("+v.cid+",1);' class='revoke-text'>撤销</span></pre>";
+                        str += "<pre>" + v.content +"</pre>";
                         str += "</div></div>";
                         str += "</li>";
                     } else{

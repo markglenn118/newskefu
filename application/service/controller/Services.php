@@ -138,6 +138,9 @@ class Services extends Base
             if(!$service){
                 $this->error('数据不存在');
             }
+            if($service['level'] == 'service'){
+                $this->error('权限不足');
+            }
             Loader::import('google.Google', VENDOR_PATH,'.php');
             $Googl = new \Google();
             $secret = $Googl->createSecret();

@@ -27,7 +27,7 @@ class Base extends Controller
     public function _initialize()
     {
         
-		 parent::_initialize();
+		parent::_initialize();
         if (empty($_SESSION['Msg']) || !isset($_SESSION['Msg']) ||empty($_SESSION['random_number'])) {
             
             $token = Cookie::get('service_token');
