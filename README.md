@@ -1,39 +1,96 @@
-# 客服系统
+# aikefu
+名称	版本要求
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+服务器	CPU 2核心 ↑
+运存 4G ↑
+宽带 5M ↑
+服务器操作系统	Linux Centos7 
 
-#### 软件架构
-软件架构说明
+运行环境	Nginx 1.18 
+PHP 7.3 
+MYSQL 5.6 
+
+PHP设置
+
+一、安装PHP插件：fileinfo、redis
+二、删除PHP对应版本中的 pcntl_signal 、pcntl_signal_dispatch、 pcntl_fork、pcntl_wait、pcntl_alarm 禁用函数
+站点配置
+
+一、上传源码包到站点目录并解压
+二、设置网站运行目录public
+ 
+⦁	设置伪静态，选择thinkphp
+ 
+
+程序安装
+
+⦁	输入http://站点域名/install.php，执行一键安装
+ 
+
+二、等待程序安装，安装完成后建议删除public目录下的install.php文件
+
+运行服务
+
+⦁	开放端口9090、2080
+ 
+
+⦁	进入网站目录，打开终端
+ 
+
+⦁	在终端窗口执行命令：php service/start.php start -d
+ 
+
+客服系统SSL配置
+
+⦁	设置宝塔SSL证书
+ 
+注意：不能开启强制HTTPS
+
+⦁	进入 /站点目录/public目录下,修改index.php
+ 
+ 
+
+⦁	进入 /站点目录/service 目录下,修改config.php
+ 
 
 
-#### 安装教程
+四、开放456、443端口
+ 
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+五、设置网站，修改配置文件：
+在service{}内加上
+location  /app{
+  proxy_pass http://127.0.0.1:456;     
+  proxy_http_version 1.1;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection "Upgrade";
+  proxy_set_header X-Real-IP $remote_addr;
+}
 
-#### 使用说明
+ 
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+六、重启推送服务：宝塔》终端；执行以下命令
+php /www/wwwroot/你的站点目录/service/start.php restart -d
 
-#### 参与贡献
+⦁	重启Nginx
+ 
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+站点管理
+
+客服系统总后台
+http://你的域名/backend
+ 
+商户后台
+http://你的域名/service
 
 
-#### 特技
+翻译配置
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+商户后台》商户设置
+到百度翻译API申请接口权限【https://api.fanyi.baidu.com/】
+选择：通用翻译API
+
+
+其他配置
+前端开启商户自助注册功能（默认开启）
+打开/config/config.php文件
