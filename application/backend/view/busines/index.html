@@ -49,8 +49,6 @@
 
 		<script type="text/html" id="tool-bar">
 			<button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
-            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="code">查看</button>
-            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="reset">重置</button>
 			<button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>删除</button>
 			<button class="pear-btn pear-btn-warming pear-btn-xs" lay-event="clear"><i class="layui-icon layui-icon-fonts-clear"></i>清空记录</button>
 		</script>
@@ -77,11 +75,6 @@
                             },{
                                 field: 'business_name',
                                 title: '商户名称',
-                                unresize: true,
-                                align: 'left'
-                            },{
-                                field: 'nickname',
-                                title: '谷歌别名',
                                 unresize: true,
                                 align: 'left'
                             }, {
@@ -149,10 +142,6 @@
                         window.remove(obj);
                     }else if (obj.event === 'clear') {
                         window.clear(obj);
-                    }else if (obj.event === 'code') {
-                        window.code(obj);
-                    }else if (obj.event === 'reset') {
-                        window.reset(obj);
                     }
                 });
 
@@ -201,25 +190,6 @@
                         content: MODULE_PATH + 'busines/edit?id='+obj.data.id
                     });
                 };
-                window.reset = function(obj) {
-                    layer.open({
-                        type: 2,
-                        title: '重置谷歌验证码',
-                        shade: 0.1,
-                        area: ['500px', '500px'],
-                        content: MODULE_PATH + 'busines/reset?id='+obj.data.id
-                    });
-                };
-                window.code = function(obj) {
-                    layer.open({
-                        type: 2,
-                        title: '谷歌验证码',
-                        shade: 0.1,
-                        area: ['500px', '500px'],
-                        content: MODULE_PATH + 'busines/code?id='+obj.data.id
-                    });
-                };
-
                 window.remove = function(obj) {
                     layer.confirm('确定要删除该商户吗？', {
                         icon: 3,
