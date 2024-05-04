@@ -6,6 +6,7 @@ namespace app\backend\model;
 use think\Model;
 use think\Db;
 use think\Exception;
+use think\Loader;
 
 /**
  * 数据模型类.
@@ -60,7 +61,34 @@ class Business extends Model
             return false;
         }
     }
-
+    public static function resetBusiness($post,$id){
+       
+        Db::startTrans();
+        try
+        {
+            $nickname = trim($post['nickname']);
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            //生成秘钥
+            $secret = $Googl->createSecret();
+            if(empty($secret)){
+                return false;
+            }
+            $google_url = $Googl->getQRCodeGoogleUrl($nickname,$secret);
+            Business::where('id',$id)->update([
+                'nickname' => $nickname,
+                'google_secret'=>$secret,
+                'google_url'=>$google_url
+            ]);
+            Db::commit();
+            return true;
+        }
+        catch (Exception $e)
+        {
+            Db::rollback();
+            return false;
+        }
+    }
     public static function editBusiness($post)
     {
         Db::startTrans();

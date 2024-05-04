@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:91:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/service\view\login\index.html";i:1714145448;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:91:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/service\view\login\index.html";i:1714820905;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -80,7 +80,10 @@
                     <input type="text" name="captcha" placeholder="请输入验证码" maxlength="4">
                     <img id="refreshCaptcha" class="validateImg"  src="<?php echo url('captcha'); ?>" onclick="this.src='<?php echo url('captcha'); ?>?_r='+Math.random();" title="不清楚? 点击换一个">
                 </div>
-
+                <div class="item">
+                    <span class="icon icon-3"></span>
+                    <input type="text" name="google_code" lay-verify="required" placeholder="请输入谷歌验证码" maxlength="20">
+                </div>
             </div>
             <div class="layui-form-item" style="text-align:center; width:100%;height:100%;margin:0px;">
                 <button class="login-btn" lay-submit="" lay-filter="login">立即登录</button>
@@ -109,6 +112,10 @@
             }
             if (data.field.captcha == '') {
                 layer.msg('验证码不能为空');
+                return false;
+            }
+            if (data.field.google_code == '') {
+                layer.msg('谷歌验证码不能为空');
                 return false;
             }
             layer.load();

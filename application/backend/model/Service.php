@@ -4,7 +4,9 @@
 namespace app\backend\model;
 
 use think\Model;
-
+use think\Db;
+use think\Loader;
+use think\Exception;
 /**
  * 数据模型类.
  */
@@ -28,5 +30,33 @@ class Service extends Model
             return $item;
         });
         return ['code'=>0,'data'=>$list->items(),'count' => $list->total(), 'limit' => $limit];
+    }
+    public static function resetBusiness($post,$id){
+       
+        Db::startTrans();
+        try
+        {
+            $nickname = trim($post['nickname']);
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            //生成秘钥
+            $secret = $Googl->createSecret();
+            if(empty($secret)){
+                return false;
+            }
+            $google_url = $Googl->getQRCodeGoogleUrl($nickname,$secret);
+            Service::where('service_id',$id)->update([
+                'another_name' => $nickname,
+                'google_secret'=>$secret,
+                'google_url'=>$google_url
+            ]);
+            Db::commit();
+            return true;
+        }
+        catch (Exception $e)
+        {
+            Db::rollback();
+            return false;
+        }
     }
 }

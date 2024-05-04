@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:61:"/www/wwwroot/chate.uincloud.cn/public/../application/404.html";i:1630546530;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:70:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/404.html";i:1714145448;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>

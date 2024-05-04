@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:81:"/www/wwwroot/chate.uincloud.cn/public/../application/service/view/groups/add.html";i:1630546530;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:91:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/backend\view\busines\add.html";i:1714145448;}*/ ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,15 +11,27 @@
         <div class="mainBox">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">分组名称</label>
+                    <label class="layui-form-label">商户名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="groupname" value="" lay-verify="required" placeholder="请输入分组名称" class="layui-input">
+                        <input type="text" name="business_name" value="" lay-verify="required" placeholder="请输入商户名" class="layui-input" autocomplete="off">
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">排序</label>
+                    <label class="layui-form-label">有效期</label>
                     <div class="layui-input-block">
-                        <input type="text" name="sort" value="0" lay-verify="required"  placeholder="请输入排序" class="layui-input">
+                        <input type="text" name="expire_time" lay-verify="required" placeholder="请选择有效期" autocomplete="off" class="layui-input" id="valid_time">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">坐席数量</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="max_count" value="" lay-verify="required"  placeholder="请输入坐席数量" class="layui-input" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">登录密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" name="password" value="" lay-verify="required"  placeholder="请输入登录密码" class="layui-input" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -40,9 +52,15 @@
 <script src="/static/component/layui/layui.js"></script>
 <script src="/static/component/pear/pear.js"></script>
 <script>
-layui.use(['form','jquery'],function(){
+layui.use(['form','jquery','laydate'],function(){
     let form = layui.form;
     let $ = layui.jquery;
+    let laydate = layui.laydate;
+
+    laydate.render({
+        elem: "#valid_time",
+        type: 'datetime'
+    });
 
     form.on('submit(save)', function(data){
         $.ajax({
@@ -51,7 +69,7 @@ layui.use(['form','jquery'],function(){
             contentType:'application/json',
             type:'post',
             success:function(res){
-                if (res.code===1) {
+                if (res.code==1) {
                     layer.msg(res.msg, {
                         icon: 1
                     });

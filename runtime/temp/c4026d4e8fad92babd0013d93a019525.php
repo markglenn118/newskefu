@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:83:"/www/wwwroot/chate.uincloud.cn/public/../application/service/view/groups/index.html";i:1630546530;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:93:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/service\view\vgroups\index.html";i:1714145448;}*/ ?>
 
 <!DOCTYPE html>
 <html>
@@ -14,7 +14,7 @@
 						<div class="layui-form-item layui-inline">
 							<label class="layui-form-label">分组名称</label>
 							<div class="layui-input-inline">
-								<input type="text" name="groupname" placeholder="请输入客服分组名称" class="layui-input">
+								<input type="text" name="group_name" placeholder="请输入分组名称" class="layui-input">
 							</div>
 						</div>
 						<div class="layui-form-item layui-inline">
@@ -40,7 +40,7 @@
 		<script type="text/html" id="toolbar">
 		    <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
 		        <i class="layui-icon layui-icon-addition"></i>
-		        添加客服分组
+		        添加分组
 			</button>
 		</script>
 
@@ -69,7 +69,7 @@
                                 align: 'left',
                                 width: 80
                             },{
-                                field: 'groupname',
+                                field: 'group_name',
                                 title: '客服分组',
                                 unresize: true,
                                 align: 'left'
@@ -78,12 +78,7 @@
                                 title: '分组人数',
                                 unresize: true,
                                 align: 'left',
-                            },  {
-                                field: 'sort',
-                                title: '排序',
-                                unresize: true,
-                                align: 'left',
-                            },{
+                            }, {
 								field: 'create_time',
 								title: '添加时间',
 								unresize: true,
@@ -100,7 +95,7 @@
 
 				table.render({
 					elem: '#dataTable',
-					url: MODULE_PATH + 'groups/index',
+					url: MODULE_PATH + 'vgroups/index',
 					page: true,
 					cols: cols,
                     cellMinWidth: 100,
@@ -143,7 +138,7 @@
                         title: '添加客服分组',
                         shade: 0.1,
                         area: ['500px', '230px'],
-                        content: MODULE_PATH + 'groups/add'
+                        content: MODULE_PATH + 'vgroups/add'
                     });
                 };
 
@@ -153,7 +148,7 @@
                         title: '编辑客服分组',
                         shade: 0.1,
                         area: ['500px', '230px'],
-                        content: MODULE_PATH + 'groups/edit?id='+obj.data.id
+                        content: MODULE_PATH + 'vgroups/edit?id='+obj.data.id
                     });
                 };
 
@@ -165,7 +160,7 @@
                         layer.close(index);
                         let loading = layer.load();
                         $.ajax({
-                            url: MODULE_PATH + "groups/remove?id="+obj.data.id,
+                            url: MODULE_PATH + "vgroups/remove?id="+obj.data.id,
                             dataType: 'json',
                             type: 'delete',
                             success: function(result) {

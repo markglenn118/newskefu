@@ -26,8 +26,10 @@ class Base extends Controller
      */
     public function _initialize()
     {
+        
 		 parent::_initialize();
         if (empty($_SESSION['Msg']) || !isset($_SESSION['Msg'])) {
+            
             $token = Cookie::get('service_token');
             if (!$token) {
                 $this->redirect('service/login/index');
@@ -47,11 +49,17 @@ class Base extends Controller
                 $this->open_id= $_SESSION['Msg']['open_id'];
             }
         }else{
-            $serviceInfo=db('wolive_service')->field('open_id')->where(['service_id'=>$_SESSION['Msg']['service_id']])->find();
+            
+            $serviceInfo=db('wolive_service')->field('open_id,random_number')->where(['service_id'=>$_SESSION['Msg']['service_id']])->find();
             if($serviceInfo){
                 $this->open_id=$serviceInfo['open_id'];
             }
+            if($serviceInfo['random_number'] != $_SESSION['random_number']){
+                $_SESSION['Msg'] = null;
+                $_SESSION['random_number'] = null;
+                Cookie::set('service_token','');
 
+            }
         }
         if (empty($_SESSION['Msg']) || !isset($_SESSION['Msg'])) {
             $this->redirect('service/login/index');

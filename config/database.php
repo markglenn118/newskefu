@@ -24,11 +24,11 @@ return [
     // 服务器地址
     'hostname'       => '127.0.0.1',
     // 数据库名
-    'database'       => 'aikefu',
+    'database'       => 'kefu',
     // 用户名
-    'username'       => 'aikefu',
+    'username'       => 'root',
     // 密码
-    'password'       => 'GAyx7HR8HCLnSAiB',
+    'password'       => 'root',
     // 端口
     'hostport'       => '',
     // 数据库表前缀

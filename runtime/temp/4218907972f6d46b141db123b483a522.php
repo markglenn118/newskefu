@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:87:"/www/wwwroot/chate.uincloud.cn/public/../application/service/view/setting/sentence.html";i:1632889434;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:92:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/service\view\groups\index.html";i:1714145448;}*/ ?>
 
 <!DOCTYPE html>
 <html>
@@ -12,14 +12,9 @@
 				<form class="layui-form" action="">
 					<div class="layui-form-item">
 						<div class="layui-form-item layui-inline">
-							<label class="layui-form-label">语言</label>
+							<label class="layui-form-label">分组名称</label>
 							<div class="layui-input-inline">
-								<select name="lang">
-									<option value="">选择语言</option>
-									<?php $_63971690b92ae=config('lang'); if(is_array($_63971690b92ae) || $_63971690b92ae instanceof \think\Collection || $_63971690b92ae instanceof \think\Paginator): if( count($_63971690b92ae)==0 ) : echo "" ;else: foreach($_63971690b92ae as $key=>$vo): ?>
-									<option value="<?php echo $key; ?>"><?php echo $vo; ?></option>
-									<?php endforeach; endif; else: echo "" ;endif; ?>
-								</select>
+								<input type="text" name="groupname" placeholder="请输入客服分组名称" class="layui-input">
 							</div>
 						</div>
 						<div class="layui-form-item layui-inline">
@@ -45,17 +40,10 @@
 		<script type="text/html" id="toolbar">
 		    <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
 		        <i class="layui-icon layui-icon-addition"></i>
-		        添加问候语
+		        添加客服分组
 			</button>
 		</script>
 
-		<script type="text/html" id="statu">
-			{{#if (d.state == 'using') { }}
-			<span>启用</span>
-			{{# }else{ }}
-			<span>禁用</span>
-			{{# } }}
-		</script>
 
 		<script type="text/html" id="tool-bar">
 			<button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
@@ -75,25 +63,29 @@
 
                 let cols = [
                         [{
-                                field: 'sid',
+                                field: 'id',
                                 title: 'ID',
                                 unresize: true,
                                 align: 'left',
+                                width: 80
+                            },{
+                                field: 'groupname',
+                                title: '客服分组',
+                                unresize: true,
+                                align: 'left'
                             }, {
-                                field: 'content',
-                                title: '内容',
+                                field: 'group_num',
+                                title: '分组人数',
                                 unresize: true,
                                 align: 'left',
-                            	width: 500,
+                            },  {
+                                field: 'sort',
+                                title: '排序',
+                                unresize: true,
+                                align: 'left',
                             },{
-								field: 'state',
-								title: '状态',
-								unresize: true,
-								align: 'left',
-                            	templet: '#statu'
-							},{
-								field: 'lang',
-								title: '语言',
+								field: 'create_time',
+								title: '添加时间',
 								unresize: true,
 								align: 'left',
 							},
@@ -108,7 +100,7 @@
 
 				table.render({
 					elem: '#dataTable',
-					url: MODULE_PATH + 'setting/sentence',
+					url: MODULE_PATH + 'groups/index',
 					page: true,
 					cols: cols,
                     cellMinWidth: 100,
@@ -148,32 +140,32 @@
 				window.add = function(obj) {
                     layer.open({
                         type: 2,
-                        title: '添加问候语',
+                        title: '添加客服分组',
                         shade: 0.1,
-                        area: ['700px', '600px'],
-                        content: MODULE_PATH + 'setting/sentence_add'
+                        area: ['500px', '230px'],
+                        content: MODULE_PATH + 'groups/add'
                     });
                 };
 
                 window.edit = function(obj) {
                     layer.open({
                         type: 2,
-                        title: '编辑问候语',
+                        title: '编辑客服分组',
                         shade: 0.1,
-                        area: ['700px', '600px'],
-                        content: MODULE_PATH + 'setting/sentence_edit?id='+obj.data.sid
+                        area: ['500px', '230px'],
+                        content: MODULE_PATH + 'groups/edit?id='+obj.data.id
                     });
                 };
 
                 window.remove = function(obj) {
-                    layer.confirm('确定要删除该问候语吗？', {
+                    layer.confirm('确定要删除该分组吗？', {
                         icon: 3,
                         title: '提示'
                     }, function(index) {
                         layer.close(index);
                         let loading = layer.load();
                         $.ajax({
-                            url: MODULE_PATH + "setting/sentence_remove?id="+obj.data.sid,
+                            url: MODULE_PATH + "groups/remove?id="+obj.data.id,
                             dataType: 'json',
                             type: 'delete',
                             success: function(result) {

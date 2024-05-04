@@ -36,7 +36,34 @@ class Busines extends Base
         }
         return $this->fetch();
     }
-
+    //获取谷歌验证码
+    public function code(){
+        
+        $user = Business::where("id",$this->request->get('id'))->find();
+        if($user['google_url']){
+            $google_url = $user['google_url'];
+        }else{
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            //生成秘钥
+            $secret = $Googl->createSecret();
+            $nickname = !empty($user['nickname']) ? $user['nickname'] : $user['business_name'];
+            $google_url = $Googl->getQRCodeGoogleUrl($nickname,$secret);
+            Business::where("id",$this->request->get('id'))->update(['google_secret'=>$secret,'google_url'=>$google_url]);
+        }
+        $this->assign('google_url', $google_url);
+        return $this->fetch();
+    }
+    //重置谷歌验证码
+    public function reset(){
+        if ($this->request->isAjax()) {
+            $post = $this->request->post();
+            if(Business::resetBusiness($post,$this->request->get('id'))) $this->success('操作成功！');
+            $this->error('修改失败！');
+        }
+       
+        return $this->fetch();
+    }
     public function edit()
     {
         if ($this->request->isAjax()) {

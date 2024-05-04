@@ -1,3 +1,4 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:94:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/backend\view\services\index.html";i:1714817471;}*/ ?>
 
 <!DOCTYPE html>
 <html>
@@ -11,9 +12,9 @@
 				<form class="layui-form" action="">
 					<div class="layui-form-item">
 						<div class="layui-form-item layui-inline">
-							<label class="layui-form-label">商户名</label>
+							<label class="layui-form-label">用户名</label>
 							<div class="layui-input-inline">
-								<input type="text" name="user_name" placeholder="请输入商户名" class="layui-input">
+								<input type="text" name="user_name" placeholder="请输入客服用户名" class="layui-input">
 							</div>
 						</div>
 						<div class="layui-form-item layui-inline">
@@ -36,28 +37,29 @@
 			</div>
 		</div>
 
-		<script type="text/html" id="toolbar">
-			<button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
-				<i class="layui-icon layui-icon-addition"></i>
-				添加商户
-			</button>
+		<script type="text/html" id="user-status">
+			{{#if (d.state == 'online') { }}
+			<span>在线</span>
+			{{# }else{ }}
+			<span>离线</span>
+			{{# } }}
 		</script>
 
 		<script type="text/html" id="user-enable">
-			<input type="checkbox" name="enable" value="{{d.id}}" lay-skin="switch" lay-text="激活|禁用" lay-filter="user-enable" {{ d.is_delete == 0 ? 'checked' : '' }}>
+			<input type="checkbox" name="enable" value="{{d.service_id}}" lay-skin="switch" lay-text="开启|关闭" lay-filter="user-enable" {{ d.offline_first == 1 ? 'checked' : '' }}>
 		</script>
 
 		<script type="text/html" id="tool-bar">
-			<button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+			<button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>删除</button>
             <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="code">查看</button>
             <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="reset">重置</button>
-			<button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>删除</button>
+			<button class="pear-btn pear-btn-xs copy" lay-event="copy" data-clipboard-text="{{d.personal}}"><i class="layui-icon layui-icon-link"></i>复制</button>
 			<button class="pear-btn pear-btn-warming pear-btn-xs" lay-event="clear"><i class="layui-icon layui-icon-fonts-clear"></i>清空记录</button>
 		</script>
 
         <script src="/static/component/layui/layui.js"></script>
         <script src="/static/component/pear/pear.js"></script>
-		<script src="__script__/platform/clipboard.min.js?v=__lkversion__"></script>
+		<script src="/assets/js/platform/clipboard.min.js?v=AI_KF"></script>
         <script>
 			layui.use(['table', 'form', 'jquery','common'], function() {
 				let table = layui.table;
@@ -69,48 +71,40 @@
 
                 let cols = [
                         [{
-                                field: 'id',
+                                field: 'service_id',
                                 title: 'ID',
                                 unresize: true,
                                 align: 'left',
                                 width: 80
                             },{
-                                field: 'business_name',
-                                title: '商户名称',
-                                unresize: true,
-                                align: 'left'
-                            },{
-                                field: 'nickname',
-                                title: '谷歌别名',
+                                field: 'user_name',
+                                title: '用户名',
                                 unresize: true,
                                 align: 'left'
                             }, {
-                                field: 'service_count',
-                                title: '客服数量',
+                                field: 'nick_name',
+                                title: '昵称',
                                 unresize: true,
                                 align: 'left',
-                            },  {
-                                field: 'max_count',
-                                title: '最大坐席数',
+                            }, {
+                                field: 'another_name',
+                                title: '谷歌别名',
                                 unresize: true,
                                 align: 'left',
-                            },{
-								field: 'expire_time',
-								title: '到期时间',
-								unresize: true,
-								align: 'left'
-							},{
-								field: 'lang',
-								title: '默认语言',
-								unresize: true,
-								align: 'left',
-							},{
-                                field: 'is_delete',
-                                title: '状态',
+                            }, {
+                                field: 'business_name',
+                                title: '所属商户',
                                 unresize: true,
                                 align: 'left',
-                                templet: '#user-enable'
-                            },{
+                            },
+                            {
+                                field: 'state',
+                                title: '在线状态',
+                                unresize: true,
+                                align: 'left',
+                                templet: '#user-status'
+                            },
+                            {
                                 title: '操作',
                                 toolbar: '#tool-bar',
                                 align: 'center',
@@ -121,7 +115,7 @@
 
 				table.render({
 					elem: '#dataTable',
-					url: MODULE_PATH + 'busines/index',
+					url: MODULE_PATH + 'services/index',
 					page: true,
 					cols: cols,
                     cellMinWidth: 100,
@@ -137,14 +131,12 @@
 				table.on('toolbar(dataTable)', function(obj) {
 					if (obj.event === 'refresh') {
 						window.refresh();
-					} else if (obj.event === 'add') {
-                        window.add(obj);
-                    }
+					}
 				});
 
                 table.on('tool(dataTable)', function(obj) {
-					if (obj.event === 'edit') {
-                        window.edit(obj);
+					if (obj.event === 'copy') {
+                        window.copy(obj);
                     }else if (obj.event === 'remove') {
                         window.remove(obj);
                     }else if (obj.event === 'clear') {
@@ -164,50 +156,23 @@
                     return false;
                 });
 
-                form.on('switch(user-enable)', function(obj) {
-                    let is_delete = obj.elem.checked?0:1;
-                    $.ajax({
-                        type: "POST",
-                        url: MODULE_PATH + "busines/is_delete",
-                        dataType: 'json',
-                        data: {'id':this.value,'is_delete':is_delete},
-                        success: function(result) {
-                            if (result.code === 1) {
-                                layer.tips(result.msg, obj.othis);
-                            } else {
-                                layer.tips(result.msg, obj.othis);
-                            }
-                        }
+                window.copy = function(obj) {
+                    var clipboard = new ClipboardJS('.copy');
+                    clipboard.on('success', function(e) {
+                        layer.msg('复制客服链接成功', {icon: 1});
+                        e.clearSelection();
                     });
-                });
-
-
-                window.add = function(obj) {
-                    layer.open({
-                        type: 2,
-                        title: '添加商户',
-                        shade: 0.1,
-                        area: ['600px', '500px'],
-                        content: MODULE_PATH + 'busines/add'
+                    clipboard.on('error', function(e) {
+                        layer.msg('复制成功，请关闭兼容模式或者升级浏览器');
                     });
-                };
-                
-                window.edit = function(obj) {
-                    layer.open({
-                        type: 2,
-                        title: '编辑商户',
-                        shade: 0.1,
-                        area: ['500px', '500px'],
-                        content: MODULE_PATH + 'busines/edit?id='+obj.data.id
-                    });
-                };
+				};
                 window.reset = function(obj) {
                     layer.open({
                         type: 2,
                         title: '重置谷歌验证码',
                         shade: 0.1,
                         area: ['500px', '500px'],
-                        content: MODULE_PATH + 'busines/reset?id='+obj.data.id
+                        content: MODULE_PATH + 'services/reset?service_id='+obj.data.service_id
                     });
                 };
                 window.code = function(obj) {
@@ -216,19 +181,18 @@
                         title: '谷歌验证码',
                         shade: 0.1,
                         area: ['500px', '500px'],
-                        content: MODULE_PATH + 'busines/code?id='+obj.data.id
+                        content: MODULE_PATH + 'services/code?service_id='+obj.data.service_id
                     });
                 };
-
                 window.remove = function(obj) {
-                    layer.confirm('确定要删除该商户吗？', {
+                    layer.confirm('确定要删除该用户', {
                         icon: 3,
                         title: '提示'
                     }, function(index) {
                         layer.close(index);
                         let loading = layer.load();
                         $.ajax({
-                            url: MODULE_PATH + "busines/remove?id="+obj.data.id,
+                            url: MODULE_PATH + "services/remove?service_id="+obj.data.service_id,
                             dataType: 'json',
                             type: 'delete',
                             success: function(result) {
@@ -252,14 +216,14 @@
                 };
 
                 window.clear = function(obj) {
-                    layer.confirm('确定要清空该商户下客服的所有聊天记录吗？', {
+                    layer.confirm('确定要清空该客服的所有聊天记录吗？', {
                         icon: 3,
                         title: '提示'
                     }, function(index) {
                         layer.close(index);
                         let loading = layer.load();
                         $.ajax({
-                            url: MODULE_PATH + "busines/clear?id="+obj.data.id,
+                            url: MODULE_PATH + "services/clear?id="+obj.data.service_id,
                             dataType: 'json',
                             type: 'delete',
                             success: function(result) {

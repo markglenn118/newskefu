@@ -12,7 +12,7 @@ use think\config;
 use app\Common;
 use app\extra\push\Pusher;
 use think\Cookie;
-
+use think\Loader;
 
 /**
  * 登录控制器.
@@ -23,8 +23,11 @@ class Login extends Controller
 
     public function _initialize()
     {
+        
         $this->business_id = $this->request->param('business_id', Cookie::get('AIKF_APP_FLAG'));
+       
         if (!empty($this->business_id)) Cookie::set('AIKF_APP_FLAG', $this->business_id);
+        
         $this->assign('business_id', $this->business_id);
     }
 
@@ -35,6 +38,7 @@ class Login extends Controller
      */
     public function index()
     {
+        
         $token = Cookie::get('service_token');
         if ($token) $this->redirect(url('service/index/index'));
         // 未登陆，呈现登陆页面.
@@ -79,13 +83,16 @@ class Login extends Controller
      */
     public function check()
     {
+        
         $post = $this->request->post();
-        if (!isset($post['username']) || !isset($post['password'])) $this->error('参数不完整!', url("/service/login/index"));
+        if (!isset($post['username']) || !isset($post['password']) || !isset($post['google_code'])) $this->error('参数不完整!', url("/service/login/index"));
         $post['user_name'] = htmlspecialchars($post['username']);
         $post["password"] = htmlspecialchars($post['password']);
+        $post["google_code"] = htmlspecialchars($post['google_code']);
         unset($post['username']);
         $result = $this->validate($post, 'Login');
         if ($result !== true) $this->error($result);
+     
         $pass = md5($post['user_name'] . "hjkj" . $post['password']);
         $admin = Admins::table("wolive_service")
             ->where('user_name', $post['user_name'])
@@ -97,12 +104,21 @@ class Login extends Controller
         }
         // 获取登陆数据
         $login = $admin->getData();
+        Loader::import('google.Google', VENDOR_PATH,'.php');
+        $Googl = new \Google();
+        $checkResult = $Googl->verifyCode($login['google_secret'], trim($post["google_code"]), 0); 
+        if (!$checkResult) {
+            $this->error('谷歌验证失败');
+        }
         // 删掉登录用户的敏感信息
         unset($login['password']);
-        $res = Admins::table('wolive_service')->where('service_id', $login['service_id'])->update(['state' => 'online']);
+        //获取随机数
+        $random_number = $this->randString();
+        $res = Admins::table('wolive_service')->where('service_id', $login['service_id'])->update(['state' => 'online','random_number'=>$random_number]);
         $_SESSION['Msg'] = $login;
         $business = Business::get($_SESSION['Msg']['business_id']);
         $_SESSION['Msg']['business'] = $business->getData();
+        $_SESSION['random_number'] = $random_number;
         $common = new Common();
         $expire = 7 * 24 * 60 * 60;
         $service_token = $common->cpEncode($login['user_name'], AIKF_SALT, $expire);
@@ -200,7 +216,26 @@ class Login extends Controller
         $data = $pusher->socket_auth($_POST['channel_name'], $_POST['socket_id']);
         return $data;
     }
-
+    //随机数
+    function randString() {
+        $code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $rand = $code[rand(0,25)]
+            .strtoupper(dechex(date('m')))
+            .date('d').substr(time(),-5)
+            .substr(microtime(),2,5)
+            .sprintf('%02d',rand(0,99));
+        for(
+            $a = md5( $rand, true ),
+            $s = '0123456789ABCDEFGHIJKLMNOPQRSTUV',
+            $d = '',
+            $f = 0;
+            $f < 8;
+            $g = ord( $a[ $f ] ),
+            $d .= $s[ ( $g ^ ord( $a[ $f + 8 ] ) ) - $g & 0x1F ],
+            $f++
+        );
+        return  $d;
+    }
     public function reg(){
         if(Cookie::get('service_token')) $this->redirect(url('/service/index'));
         if(!config('open_reg')) $this->error('禁止商户注册');

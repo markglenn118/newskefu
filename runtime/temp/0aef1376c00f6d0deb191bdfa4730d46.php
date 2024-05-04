@@ -1,3 +1,4 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:93:"C:\Users\Administrator\Desktop\WWW\kefu\public/../application/backend\view\busines\index.html";i:1714817530;}*/ ?>
 
 <!DOCTYPE html>
 <html>
@@ -57,7 +58,7 @@
 
         <script src="/static/component/layui/layui.js"></script>
         <script src="/static/component/pear/pear.js"></script>
-		<script src="__script__/platform/clipboard.min.js?v=__lkversion__"></script>
+		<script src="/assets/js/platform/clipboard.min.js?v=AI_KF"></script>
         <script>
 			layui.use(['table', 'form', 'jquery','common'], function() {
 				let table = layui.table;
