@@ -30,15 +30,15 @@ define('CONF_PATH', __DIR__ . '/../config/');
 
 
 // 定义pusher密匙
-define('app_key','tjawfoxkc2hsr4k9');
-define('app_secret','ykne5lhnaq6igu7fmupva5gv6sjkf4vh');
+define('app_key','6kxtaqx2r4j9tg4u');
+define('app_secret','e0ihknxhvc8i7xqjnogqsrnjn3a7lsmb');
 define('app_id',232);
-define('whost','ws://www.kefu.cn');
-define('ahost','http://www.kefu.cn');
+define('whost','ws://www.test.cn');
+define('ahost','http://www.test.cn');
 define('wport',9090);
 define('aport',2080);
-define('registToken','1190672203');
-define('AIKF_SALT','aio3anna21tmf8l7qq');
+define('registToken','2125139686');
+define('AIKF_SALT','d2vtfa8xb5kbr9644x');
 define('AKF_VERSION','AI_KF');
 
 // 自定义一个 入口 目录
@@ -50,7 +50,7 @@ define('EXTEND_PATH','../extend/');
 define('appid','');
 define('appsecret','');
 define('token','');
-define('domain','http://www.kefu.cn');
+define('domain','http://www.test.cn');
 
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';

@@ -24,20 +24,25 @@ class Services extends Base
     public function remove()
     {
         $id = $this->request->get('service_id');
-        if (Service::destroy(['service_id' => $id])) $this->success('操作成功！');
+        $service = Db::name('wolive_service')->where('service_id', $id)->find();
+        if (Service::destroy(['service_id' => $id])) {
+            $this->log('删除客服昵称为【'.$service['nick_name'].'】的账号');
+            $this->success('操作成功！');
+        }
         $this->error('操作失败！');
     }
 
     public function clear()
     {
         $id = $this->request->get('id');
+        $service = Db::name('wolive_service')->where('service_id', $id)->find();
         if (Db::name('wolive_chats')->where('service_id', $id)->delete()) {
             $this->success('操作成功！');
+            $this->log('清空了客服昵称为【'.$service['nick_name'].'】的聊天记录');
         }
         $this->error('操作失败！');
     }
     public function code(){
-        //echo $this->request->get('service_id');exit;
         $service = Db::name('wolive_service')->where('service_id',$this->request->get('service_id'))->find();
         if($service['google_url']){
             $google_url = $service['google_url'];
@@ -49,14 +54,22 @@ class Services extends Base
             $nickname = !empty($service['another_name']) ? $service['another_name'] : $service['user_name'];
             $google_url = $Googl->getQRCodeGoogleUrl($nickname,$secret);
             Db::name('wolive_service')->where("service_id",$this->request->get('service_id'))->update(['google_secret'=>$secret,'google_url'=>$google_url]);
+            $this->log('生成了客服昵称为【'.$service['nick_name'].'】的谷歌二维码');
         }
         $this->assign('google_url', $google_url);
         return $this->fetch();
     }
     public function reset(){
         if ($this->request->isAjax()) {
+            $service = Db::name('wolive_service')->where('service_id',$this->request->get('service_id'))->find();
+            if(!$service){
+                $this->error('数据不存在');
+            }
             $post = $this->request->post();
-            if(Service::resetBusiness($post,$this->request->get('service_id'))) $this->success('操作成功！');
+            if(Service::resetBusiness($post,$service['service_id'] )) {
+                $this->log('重置了客服昵称为【'.$service['nick_name'].'】的谷歌二维码');
+                $this->success('操作成功！');
+            }
             $this->error('修改失败！');
         }
         return $this->fetch();

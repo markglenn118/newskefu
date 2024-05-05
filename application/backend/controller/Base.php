@@ -9,6 +9,7 @@ namespace app\backend\controller;
 
 use think\Controller;
 use app\backend\model\Admins;
+use app\service\model\AdminLog;
 
 class Base extends Controller
 {
@@ -31,6 +32,16 @@ class Base extends Controller
             'admin_name' => session('admin_user_name'),
             'admin_id' => session('admin_user_id'),
         ]);
+    }
+    public function log($info){
+        $data = [
+            'uid' => session('admin_user_id') ? session('admin_user_id') : 0,
+            'info' => $info,
+            'ip' => $this->request->ip(),
+            'user_agent' => $this->request->server('HTTP_USER_AGENT'),
+            'create_time' => time(),
+        ];
+        AdminLog::table('wolive_admin_log')->insert($data);
     }
 
 }

@@ -22,6 +22,7 @@ class Log extends Base
 
     public function removeLog(){
         Db::name('wolive_admin_log')->delete(true);
+        $this->log('清空了日志记录');
         $this->success('操作成功');
     }
 }

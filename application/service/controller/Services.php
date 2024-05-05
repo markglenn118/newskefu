@@ -54,9 +54,14 @@ class Services extends Base
     public function edit()
     {
         if ($this->request->isAjax()) {
+
             $post = $this->request->post();
+            $service = Service::where(['service_id' => $post['id']])->find();
             $res = Service::where("service_id", $post['id'])->field(true)->update($post);
-            if ($res) $this->success('修改成功');
+            if ($res) {
+                $this->log('[客服账号]修改客服【'.$service['nick_name'].'】的资料'.json_encode($post));
+                $this->success('修改成功');
+            }
             $this->error('修改失败！');
         }
         $id = $this->request->get('id');
@@ -94,7 +99,10 @@ class Services extends Base
             $user = Service::where("service_id", $post['id'])->find();
             $pass = md5($user['user_name'] . "hjkj" . $post['newpass']);
             $res = Service::table("wolive_service")->where("service_id", $post['id'])->update(["password" => $pass]);
-            if ($res) $this->success('修改成功');
+            if ($res) {
+                $this->log('[客服账号]重置客服【'.$user['nick_name'].'】的密码');
+                $this->success('修改成功');
+            }
             $this->error('修改失败！');
         }
         return $this->fetch();
@@ -127,6 +135,7 @@ class Services extends Base
             $nickname = !empty($service['another_name']) ? $service['another_name'] : $service['user_name'];
             $google_url = $Googl->getQRCodeGoogleUrl($nickname,$secret);
             Service::where("service_id",$this->request->get('service_id'))->update(['google_secret'=>$secret,'another_name'=>$nickname,'google_url'=>$google_url]);
+            $this->log('[客服账号]生成客服【'.$service['nick_name'].'】的谷歌二维码');
         }
         $this->assign('google_url', $google_url);
         return $this->fetch();
@@ -146,7 +155,9 @@ class Services extends Base
             $secret = $Googl->createSecret();
             $google_url = $Googl->getQRCodeGoogleUrl(trim($post['nickname']),$secret);
             if(Service::where("service_id",$this->request->get('service_id'))->update(['google_url'=>$google_url,'google_secret'=>$secret,'another_name'=>trim($post['nickname'])])){
+                $this->log('[客服账号]重置客服【'.$service['nick_name'].'】的谷歌二维码');
                 $this->success('重置谷歌验证码成功');
+                
             }
             $this->error('修改失败！');
         }

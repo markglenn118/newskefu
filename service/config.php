@@ -1,12 +1,12 @@
 <?php
 // 这里填写客服系统域名，前面带http://，用于pusher系统通知客服平台客户或者客服上下线
-$domain = 'http://www.kefu.cn';
+$domain = 'http://www.test.cn';
 
 // App_key，客服系统与pusher通讯的key
-$app_key = 'tjawfoxkc2hsr4k9';
+$app_key = '6kxtaqx2r4j9tg4u';
 
 // App_secret，客服系统与pusher通讯的密钥
-$app_secret = 'ykne5lhnaq6igu7fmupva5gv6sjkf4vh';
+$app_secret = 'e0ihknxhvc8i7xqjnogqsrnjn3a7lsmb';
 
 // App id
 $app_id = 232;

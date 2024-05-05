@@ -9,7 +9,7 @@ use app\platform\model\Business;
 use think\Controller;
 use think\Cookie;
 use app\service\model\Admins;
-
+use app\service\model\AdminLog;
 /**
  * 基础验证是否登录.
  */
@@ -30,10 +30,11 @@ class Base extends Controller
 		parent::_initialize();
         if (empty($_SESSION['Msg']) || !isset($_SESSION['Msg']) ||empty($_SESSION['random_number'])) {
             
+            Cookie::delete('service_token');
+            
+            $this->redirect('service/login/index');
+            
             $token = Cookie::get('service_token');
-            if (!$token) {
-                $this->redirect('service/login/index');
-            }
             $common = new Common();
             $user_name = $common->cpDecode($token,AIKF_SALT);
             if(!$user_name){
@@ -132,6 +133,16 @@ class Base extends Controller
         $this->assign('voice',$res['voice_state']);
         $this->assign('voice_address',$res['voice_address']);
 
+    }
+    public function log($info){
+        $data = [
+            'uid' => $_SESSION['Msg']['service_id'] ? $_SESSION['Msg']['service_id'] : 0,
+            'info' => $info,
+            'ip' => $this->request->ip(),
+            'user_agent' => $this->request->server('HTTP_USER_AGENT'),
+            'create_time' => time(),
+        ];
+        AdminLog::table('wolive_admin_log')->insert($data);
     }
 
 }

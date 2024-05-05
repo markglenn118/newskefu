@@ -23,6 +23,7 @@ class Log extends Base
 
     public function removeLog(){
         Db::name('wolive_admin_log')->where(['uid'=>$_SESSION['Msg']['service_id']])->delete(true);
+        $this->log('[客服账号]清空了日志记录');
         $this->success('操作成功');
     }
 
