@@ -124,6 +124,7 @@ class Login extends Controller
         $service_token = $common->cpEncode($login['user_name'], AIKF_SALT, $expire);
         Cookie::set('service_token', $service_token, $expire);
         $ismoblie = $common->isMobile();
+        colony_server($login['service_id']);
         $this->record_log('登录成功');
         if ($ismoblie) {
             $this->success('登录成功', url("mobile/admin/index"));
@@ -191,6 +192,7 @@ class Login extends Controller
      */
     public function auth()
     {
+        $login = $_SESSION['Msg'];
         $sarr = parse_url(ahost);
         if ($sarr['scheme'] == 'https') {
             $state = true;
@@ -203,15 +205,14 @@ class Login extends Controller
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
         $data = $pusher->socket_auth($_POST['channel_name'], $_POST['socket_id']);
         return $data;

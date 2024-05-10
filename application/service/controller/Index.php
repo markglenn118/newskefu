@@ -307,15 +307,14 @@ class Index extends Base
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
         $channel = bin2hex($post['visiter_id'] . '/' . $login['business_id']);
         $pusher->trigger("cu" . $channel, 'getswitch', array('message' => $admin));

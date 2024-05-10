@@ -114,16 +114,14 @@ class Index extends Controller
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $colonyServer = colony_server($arr2['special']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
         $business_id = $arr2['business_id'];

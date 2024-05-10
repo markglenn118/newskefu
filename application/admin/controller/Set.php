@@ -49,16 +49,14 @@ class Set extends Base
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
         $arr['business_id'] = $login['business_id'];
@@ -178,7 +176,7 @@ class Set extends Base
      */
     public function deletes()
     {
-
+        $login = $_SESSION['Msg'];
         $sarr = parse_url(ahost);
         if ($sarr['scheme'] == 'https') {
             $state = true;
@@ -192,20 +190,17 @@ class Set extends Base
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
 
-        $login = $_SESSION['Msg'];
         $post = $this->request->post();
         $result = Admins::table('wolive_queue')->where('visiter_id', $post['visiter_id'])->where('business_id', $login['business_id'])->update(['state' => 'complete']);
 
@@ -258,16 +253,14 @@ class Set extends Base
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
         $channel = bin2hex($post['visiter_id'] . '/' . $login['business_id']);
@@ -311,19 +304,17 @@ class Set extends Base
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $login = $_SESSION['Msg'];
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
-        $login = $_SESSION['Msg'];
         $post = $this->request->post();
         // 避免重复认领
         if ($login['groupid'] == 0) {
@@ -1074,15 +1065,14 @@ class Set extends Base
             'encrypted' => $state
         );
 
-        $host = ahost;
-        $port = aport;
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
         $pusher->trigger("cu" . $visiter['channel'], "video", array("message" => "申请视频连接", "channel" => $post['channel'], "avatar" => $post['avatar'], 'username' => $post['name']));
@@ -1113,16 +1103,15 @@ class Set extends Base
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $login = $_SESSION['Msg'];
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
         $pusher->trigger("cu" . $post['channel'], "video-refuse", array("message" => "对方拒绝视频连接！"));
@@ -2120,16 +2109,14 @@ class Set extends Base
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
         $visiter = Visiter::get(['business_id'=>$login['business_id'],'visiter_id'=>$arr['visiter_id']]);
@@ -2189,16 +2176,15 @@ class Set extends Base
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $login = $_SESSION['Msg'];
+        $colonyServer = colony_server($login['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
         if($type==1){
             $arr=Admins::table('wolive_chats')->where('cid',$id)->find();

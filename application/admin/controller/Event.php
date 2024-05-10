@@ -82,17 +82,7 @@ class Event extends Controller
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
 
-        $pusher = new Pusher(
-            $app_key,
-            $app_secret,
-            $app_id,
-            $options,
-            $host,
-            $port
-        );
 
         $webhook_signature = $_SERVER ['HTTP_X_PUSHER_SIGNATURE'];
 
@@ -109,6 +99,15 @@ class Event extends Controller
                     if (strpos($event['channel'], 'kefu') === 0) {
                         $channel = str_replace('kefu', 'se', $event['channel']);
                         $id = str_replace('kefu', '', $event['channel']);
+                        $colonyServer = colony_server($id);
+                        $pusher = new Pusher(
+                            $app_key,
+                            $app_secret,
+                            $app_id,
+                            $options,
+                            $colonyServer['ahost'],
+                            $colonyServer['aport']
+                        );
                         $pusher->trigger($channel, 'logout', array('message' => $this->lang_array['service_offline']));
                         $res = Admins::table('wolive_service')->where('service_id', $id)->update(['state' => 'offline']);
 
@@ -122,7 +121,15 @@ class Event extends Controller
                         $res = Admins::table("wolive_queue")->where(['visiter_id' => $data[0], 'business_id' => $data[1]])->find();
                         Admins::table("wolive_queue")->where(['visiter_id' => $data[0], 'business_id' => $data[1]])->update(['remind_tpl'=>0,'remind_comment'=>0]);
                         $id = $res['service_id'];
-
+                        $colonyServer = colony_server($id);
+                        $pusher = new Pusher(
+                            $app_key,
+                            $app_secret,
+                            $app_id,
+                            $options,
+                            $colonyServer['ahost'],
+                            $colonyServer['aport']
+                        );
                         $arr = array(
                             'chas' => $channel
                         );
@@ -141,6 +148,15 @@ class Event extends Controller
                         $channel = str_replace('kefu', 'se', $event['channel']);
                         $id = str_replace('kefu', '', $event['channel']);
                         $res = Admins::table('wolive_service')->where('service_id', $id)->update(['state' => 'online']);
+                        $colonyServer = colony_server($id);
+                        $pusher = new Pusher(
+                            $app_key,
+                            $app_secret,
+                            $app_id,
+                            $options,
+                            $colonyServer['ahost'],
+                            $colonyServer['aport']
+                        );
                         $pusher->trigger($channel, 'geton', array('message' => $this->lang_array['service_online']));
 
                     } elseif (strpos($event['channel'], 'cu') === 0) {
@@ -156,6 +172,15 @@ class Event extends Controller
                         $id = $res['service_id'];
                         $arr = array(
                             'chas' => $channel
+                        );
+                        $colonyServer = colony_server($id);
+                        $pusher = new Pusher(
+                            $app_key,
+                            $app_secret,
+                            $app_id,
+                            $options,
+                            $colonyServer['ahost'],
+                            $colonyServer['aport']
                         );
                         $pusher->trigger("kefu" . $id, 'geton', array('message' => $arr));
 
@@ -255,16 +280,14 @@ class Event extends Controller
         $options = array(
             'encrypted' => $state
         );
-        $host = $domain;
-        $port = aport;
-
+        $colonyServer = colony_server($arr['service_id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
         $service = Admins::table('wolive_queue')->where('business_id', $arr['business_id'])->where('visiter_id', $arr['visiter_id'])->where('state', 'normal')->find();
@@ -503,7 +526,12 @@ class Event extends Controller
         );
         $host = ahost;
         $port = aport;
-
+        $arr = $this->request->post();
+        if (!empty($arr['host']) && $arr['host'] != $host){
+            $host = $arr['host'];
+            $colonyHostKey = array_search($arr['host'],COLONY_HOST);
+            $port = COLONY_APORT[$colonyHostKey];
+        }
         $pusher = new Pusher(
             $app_key,
             $app_secret,
@@ -513,7 +541,6 @@ class Event extends Controller
             $port
         );
 
-        $arr = $this->request->post();
 
         if (!isset($arr['visiter_id'])  || !isset($arr['business_id'])) {
 
@@ -877,17 +904,7 @@ class Event extends Controller
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
 
-        $pusher = new Pusher(
-            $app_key,
-            $app_secret,
-            $app_id,
-            $options,
-            $host,
-            $port
-        );
 
         $post = $_POST;
 
@@ -903,7 +920,15 @@ class Event extends Controller
         $service_id = $service['service_id'];
         $post["timestamp"] = time();
         $post['service_id'] = $service_id;
-
+        $colonyServer = colony_server($service_id);
+        $pusher = new Pusher(
+            $app_key,
+            $app_secret,
+            $app_id,
+            $options,
+            $colonyServer['ahost'],
+            $colonyServer['aport']
+        );
         try {
             Storage::$variable = 'upload';
             $url = Storage::put();
@@ -949,17 +974,7 @@ class Event extends Controller
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
 
-        $pusher = new Pusher(
-            $app_key,
-            $app_secret,
-            $app_id,
-            $options,
-            $host,
-            $port
-        );
 
         $post = $_POST;
         $service = Admins::table('wolive_queue')->where('business_id', $post['business_id'])->where('visiter_id', $post['visiter_id'])->where('state', 'normal')->find();
@@ -976,7 +991,15 @@ class Event extends Controller
         $post['service_id'] = $service_id;
 
         $name = $_FILES["folder"]["name"];
-
+        $colonyServer = colony_server($service_id);
+        $pusher = new Pusher(
+            $app_key,
+            $app_secret,
+            $app_id,
+            $options,
+            $colonyServer['ahost'],
+            $colonyServer['aport']
+        );
         try {
             Storage::$variable = 'folder';
             $url = Storage::put();
@@ -1111,16 +1134,14 @@ class Event extends Controller
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $colonyServer = colony_server($post['id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
         $pusher->trigger("kefu" . $post['id'], "video", array("message" => "申请视频连接", "channel" => $post['channel'], "avatar" => $post['avatar'], 'username' => $post['name'], "cid" => $post['cha']));
 
@@ -1152,16 +1173,14 @@ class Event extends Controller
         $options = array(
             'encrypted' => $state
         );
-        $host = ahost;
-        $port = aport;
-
+        $colonyServer = colony_server($post['id']);
         $pusher = new Pusher(
             $app_key,
             $app_secret,
             $app_id,
             $options,
-            $host,
-            $port
+            $colonyServer['ahost'],
+            $colonyServer['aport']
         );
 
         $pusher->trigger("kefu" . $post['id'], "video-refuse", array("message" => "对方拒绝视频连接！"));
@@ -1228,16 +1247,14 @@ class Event extends Controller
             $options = array(
                 'encrypted' => $state
             );
-            $host = ahost;
-            $port = aport;
-
+            $colonyServer = colony_server($service_id);
             $pusher = new Pusher(
                 $app_key,
                 $app_secret,
                 $app_id,
                 $options,
-                $host,
-                $port
+                $colonyServer['ahost'],
+                $colonyServer['aport']
             );
             $arr['visiter_id'] = $visiter_id;
             $arr['business_id'] = $result['business_id'];

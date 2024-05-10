@@ -56,7 +56,7 @@
               , enabledTransports: ['ws']
               , wsHost: '{$whost}'
               , {$port}: {$wport}
-              , authEndpoint: '/admin/login/auth'
+              , authEndpoint: '/admin/login/auth?ws='+{$whost}
               ,disableStats: true
       });
 

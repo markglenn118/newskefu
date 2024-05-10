@@ -181,7 +181,7 @@ class Admin extends Base
       $this->assign("data",$data);
       $this->assign("avatar",$avatar);
       $this->assign('se',$login);
-      $this->assign("img",$login['avatar']);	
+      $this->assign("img",$login['avatar']);
 	  return $this->fetch();
 	}
   

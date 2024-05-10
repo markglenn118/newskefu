@@ -123,9 +123,10 @@ class Base extends Controller
         $this->assign('is_bind_wechat',$is_bind_wechat);
         $this->assign('seo',$_SESSION['Msg']['business']);
         $this->assign('app_key', $app_key);
-        $this->assign('whost',$arr['host']);
+        $colonyServer = colony_server($login['service_id']);
+        $this->assign('whost',$colonyServer['host']);
         $this->assign('value', $value);
-        $this->assign('wport', wport);
+        $this->assign('wport', $colonyServer['wport']);
         $this->assign('arr', $login);
         $this->assign('data', $data);
         $this->assign('port', $port);

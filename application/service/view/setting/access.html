@@ -74,7 +74,7 @@
                 , enabledTransports: ['ws']
                 , wsHost: '{$whost}'
                 , {$port}: {$wport}
-        , authEndpoint: ROOT_URL + '/admin/login/auth'
+        , authEndpoint: ROOT_URL + '/admin/login/auth?ws='+{$whost}
                 ,disableStats: true
         });
 
