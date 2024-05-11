@@ -57,7 +57,20 @@ class Setting extends Base
             if ($check) $this->error('该语言已存在问候语！');
             $post['service_id'] = $_SESSION['Msg']['service_id'];
             $post['content'] = $this->request->post('content', '', '\app\Common::clearXSS');
-            $res = Sentence::insert($post);
+            //商户号
+            if ($_SESSION['Msg']['parent_id'] == 0){
+               $serviceIds = Service::where('parent_id',$_SESSION['Msg']['service_id'])->column('service_id');
+               array_push($serviceIds,$_SESSION['Msg']['service_id']);
+               $insertData = [];
+               foreach ($serviceIds as $id){
+                   $post['service_id'] = $id;
+                   $insertData[] = $post;
+               }
+                Sentence::where('service_id','in',$serviceIds)->where('lang',$post['lang'])->delete();
+                $res = (new Sentence())->saveAll($insertData);
+            }else{
+                $res = Sentence::insert($post);
+            }
             if ($res) $this->success('添加成功');
             $this->error('添加失败！');
         }
@@ -75,7 +88,21 @@ class Setting extends Base
         if ($this->request->isAjax()) {
             $post = $this->request->post();
             $post['content'] = $this->request->post('content', '', '\app\Common::clearXSS');
-            $res = Sentence::where("sid", $post['id'])->where('service_id', $_SESSION['Msg']['service_id'])->field(true)->update($post);
+            //商户号
+            if ($_SESSION['Msg']['parent_id'] == 0){
+                $serviceIds = Service::where('parent_id',$_SESSION['Msg']['service_id'])->column('service_id');
+                array_push($serviceIds,$_SESSION['Msg']['service_id']);
+                unset($post['id']);
+                $insertData = [];
+                foreach ($serviceIds as $id){
+                    $post['service_id'] = $id;
+                    $insertData[] = $post;
+                }
+                Sentence::where('service_id','in',$serviceIds)->where('lang',$post['lang'])->delete();
+                $res = (new Sentence())->saveAll($insertData);
+            }else{
+                $res = Sentence::where("sid", $post['id'])->where('service_id', $_SESSION['Msg']['service_id'])->field(true)->update($post);
+            }
             if ($res) $this->success('修改成功');
             $this->error('修改失败！');
         }
@@ -88,7 +115,15 @@ class Setting extends Base
     public function sentence_remove()
     {
         $id = $this->request->get('id');
-        if (Sentence::destroy(['sid' => $id])) $this->success('操作成功！');
+        if ($_SESSION['Msg']['parent_id'] == 0){
+            $serviceIds = Service::where('parent_id',$_SESSION['Msg']['service_id'])->column('service_id');
+            array_push($serviceIds,$_SESSION['Msg']['service_id']);
+            $sentence = Sentence::get(['sid' => $id]);
+            $res = Sentence::where('service_id','in',$serviceIds)->where('lang',$sentence['lang'])->delete();
+        }else{
+            $res = Sentence::destroy(['sid' => $id]);
+        }
+        if ($res) $this->success('操作成功！');
         $this->error('操作失败！');
     }
 
