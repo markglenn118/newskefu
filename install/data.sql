@@ -388,12 +388,14 @@ CREATE TABLE `wolive_service`  (
   `google_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '谷歌url',
   `google_secret` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '谷歌密钥',
   `random_number` char(8) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '随机数',
+  `google_bind` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否绑定谷歌验证：0否 1是',
   PRIMARY KEY (`service_id`) USING BTREE,
   UNIQUE INDEX `user_name`(`user_name`) USING BTREE,
   INDEX `pid`(`parent_id`) USING BTREE,
   INDEX `web`(`business_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '后台客服表' ROW_FORMAT = COMPACT;
 
+-- ALTER TABLE `wolive_service` ADD COLUMN `google_bind` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否绑定谷歌验证：0否 1是' AFTER `random_number`;
 -- ----------------------------
 -- Table structure for wolive_storage
 -- ----------------------------

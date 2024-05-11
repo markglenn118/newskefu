@@ -10,9 +10,21 @@
         <div class="mainBox">
             <div class="main-container">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">谷歌别名</label>
+                    <label class="layui-form-label">谷歌密钥</label>
                     <div class="layui-input-block">
-                        <input type="text" name="nickname" value="{$another_name}" lay-verify="required" placeholder="请输入谷歌别名" class="layui-input" autocomplete="off">
+                        <input type="text" name="google_secret" readonly="true" value="{$google_secret}"  class="layui-input" autocomplete="off">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">谷歌二维码</label>
+                    <div class="layui-input-block">
+                        <img src="{$google_url}" style="width: 200px;height: 200px;margin-top: 10%;" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">谷歌验证码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="google_code" value="" lay-verify="required" placeholder="请输入谷歌验证码" class="layui-input" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -23,10 +35,7 @@
                 <i class="layui-icon layui-icon-ok"></i>
                 提交
             </button>
-            <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">
-                <i class="layui-icon layui-icon-refresh"></i>
-                重置
-            </button>
+
         </div>
     </div>
 </form>

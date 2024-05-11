@@ -150,17 +150,23 @@ class Services extends Base
             if($service['level'] == 'service'){
                 $this->error('权限不足');
             }
-            Loader::import('google.Google', VENDOR_PATH,'.php');
-            $Googl = new \Google();
-            $secret = $Googl->createSecret();
-            $google_url = $Googl->getQRCodeGoogleUrl(trim($post['nickname']),$secret);
-            if(Service::where("service_id",$this->request->get('service_id'))->update(['google_url'=>$google_url,'google_secret'=>$secret,'another_name'=>trim($post['nickname'])])){
+            $update = ['google_bind'=>0];
+            if (trim($post['nickname']) != $service['another_name']){
+                Loader::import('google.Google', VENDOR_PATH,'.php');
+                $Googl = new \Google();
+                $secret = $Googl->createSecret();
+                $google_url = $Googl->getQRCodeGoogleUrl(trim($post['nickname']),$secret);
+                $update = ['google_bind'=>0,'google_url'=>$google_url,'google_secret'=>$secret,'another_name'=>trim($post['nickname'])];
+            }
+            if(Service::where("service_id",$this->request->get('service_id'))->update($update)){
                 $this->log('[客服账号]重置客服【'.$service['nick_name'].'】的谷歌二维码');
                 $this->success('重置谷歌验证码成功');
                 
             }
             $this->error('修改失败！');
         }
+        $service = Service::where('service_id',$this->request->get('service_id'))->find();
+        $this->assign('another_name', $service['another_name']);
         return $this->fetch();
     }
 }

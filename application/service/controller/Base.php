@@ -127,6 +127,8 @@ class Base extends Controller
         $this->assign('whost',$colonyServer['host']);
         $this->assign('value', $value);
         $this->assign('wport', $colonyServer['wport']);
+        $this->assign('service_id', $login['service_id']);
+        $this->assign('google_bind', $login['google_bind']);
         $this->assign('arr', $login);
         $this->assign('data', $data);
         $this->assign('port', $port);

@@ -104,11 +104,14 @@ class Login extends Controller
         }
         // 获取登陆数据
         $login = $admin->getData();
-        Loader::import('google.Google', VENDOR_PATH,'.php');
-        $Googl = new \Google();
-        $checkResult = $Googl->verifyCode($login['google_secret'], trim($post["google_code"]), 0); 
-        if (!$checkResult) {
-            $this->error('谷歌验证失败');
+        if (!empty($login['google_bind'])){
+            if (empty($post["google_code"])) $this->error('谷歌验证码必填！');
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            $checkResult = $Googl->verifyCode($login['google_secret'], trim($post["google_code"]), 0);
+            if (!$checkResult) {
+                $this->error('谷歌验证失败');
+            }
         }
         // 删掉登录用户的敏感信息
         unset($login['password']);
