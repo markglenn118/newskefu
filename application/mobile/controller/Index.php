@@ -315,10 +315,10 @@ class Index extends Controller
         $this->assign("atype", $business['audio_state']);
         $this->assign('groupid', $groupid);
         $this->assign('app_key', $app_key);
-        $this->assign('whost', $colonyServer['host']);
+        $this->assign('whost', $arr['host']);
         $this->assign('webs',$business['webs']);
         $this->assign('value', $value);
-        $this->assign('wport', $colonyServer['wport']);
+        $this->assign('wport', wport);
         $this->assign('port', $port);
         $this->assign('url', $url);
         $this->assign('visiter', $visiter_name);

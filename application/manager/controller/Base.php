@@ -58,10 +58,9 @@ class Base extends Controller
         $this->assign('is_we7',$is_we7);
         $this->assign('seo',$_SESSION['Msg']['business']);
         $this->assign('app_key', $app_key);
-        $colonyServer = colony_server($login['service_id']);
-        $this->assign('whost',$colonyServer['host']);
+        $this->assign('whost',$arr['host']);
         $this->assign('value', $value);
-        $this->assign('wport', $colonyServer['wport']);
+        $this->assign('wport', wport);
         $this->assign('arr', $login);
         $this->assign('data', $data);
         $this->assign('port', $port);
