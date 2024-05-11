@@ -789,7 +789,9 @@ function randomChar(l){
 var send = function() {
     //获取 游客id
     var msg = $("#text_all").val();
-
+    if (msg.includes('http://') || msg.includes('https://')){
+        layer.msg('禁止发送带有链接的消息'); return;
+    }
 
     var reg = new RegExp('<', "g")
     msg = msg.replace(reg, '&lt;');
