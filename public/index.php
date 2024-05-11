@@ -53,7 +53,7 @@ define('token','');
 define('domain','http://192.168.101.197');
 
 //集群配置(三个常量必须一一对应)
-define("COLONY_HOST", ['192.168.101.197', '192.168.101.197']);
+define("COLONY_HOST", ['192.168.101.196', '192.168.101.197']);
 define("COLONY_WPORT", [9090, 9090]);
 define("COLONY_APORT", [2080, 2080]);
 

@@ -356,7 +356,12 @@
         if (pic == "") {
             pic = "__image__/index/avatar-red2.png";
         }
-
+   var config ={
+       'app_key':'{$app_key}',
+       'whost':'{$whost}',
+       'value':{$value},
+       'wport':{$wport}
+   };
    var service_id=special;
        var num;
        var t;
@@ -407,7 +412,7 @@
                 ,enabledTransports: ['ws']
                 ,wsHost: '{$whost}'
                 ,{$port}: {$wport}
-                ,authEndpoint: ROOT_URL + '/admin/login/auth?ws='+{$whost}
+                ,authEndpoint: ROOT_URL + '/admin/login/auth?ws={$whost}'
                 ,disableStats: true
          });
 

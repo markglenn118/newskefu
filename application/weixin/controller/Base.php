@@ -30,9 +30,10 @@ class Base extends Controller
         }
 
         $this->assign('app_key', $app_key);
-        $this->assign('whost', $arr['host']);
+        $colonyServer = colony_server($_SESSION['Msg']['service_id']);
+        $this->assign('whost',$colonyServer['host']);
         $this->assign('value', $value);
-        $this->assign('wport', wport);
+        $this->assign('wport', $colonyServer['wport']);
         $this->assign('port', $port);
         $this->assign('arr', $login);
     }

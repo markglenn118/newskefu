@@ -172,7 +172,17 @@ class Index extends Controller
         $options = array(
             'encrypted' => $state
         );
-
+        $whost = whost;
+        $arr = parse_url($whost);
+        if ($arr['scheme'] == 'ws') {
+            $port = 'wsPort';
+            $value = 'false';
+        } else {
+            $value = 'true';
+            $port = 'wssPort';
+        }
+        $host = $arr['host'];
+        $wport = wport;
         $business_id = $arr2['business_id'];
         $visiter_id = $arr2['visiter_id'];
         $arr2['product'] = htmlspecialchars_decode($arr2['product']);
@@ -222,6 +232,8 @@ class Index extends Controller
                             $colonyServer['ahost'],
                             $colonyServer['aport']
                         );
+                        $host = $colonyServer['host'];
+                        $wport = $colonyServer['wport'];
                         $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $mydata));
                         $chats = User::table('wolive_chats')->insert($mydata);
                     }
@@ -253,6 +265,8 @@ class Index extends Controller
                             $colonyServer['ahost'],
                             $colonyServer['aport']
                         );
+                        $host = $colonyServer['host'];
+                        $wport = $colonyServer['wport'];
                         $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $mydata));
                         $chats = User::table('wolive_chats')->insert($mydata);
 
@@ -289,6 +303,8 @@ class Index extends Controller
                             $colonyServer['ahost'],
                             $colonyServer['aport']
                         );
+                        $host = $colonyServer['host'];
+                        $wport = $colonyServer['wport'];
                         $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $mydata));
                         $chats = User::table('wolive_chats')->insert($mydata);
                     }
@@ -319,6 +335,8 @@ class Index extends Controller
                             $colonyServer['ahost'],
                             $colonyServer['aport']
                         );
+                        $host = $colonyServer['host'];
+                        $wport = $colonyServer['wport'];
                         $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $mydata));
                         $chats = User::table('wolive_chats')->insert($mydata);
                     }
@@ -337,16 +355,6 @@ class Index extends Controller
         if ($visiter_name == '') {
              $visiter_name = '游客' . $visiter_id;
          }
-        $app_key = app_key;
-        $whost = whost;
-        $arr = parse_url($whost);
-        if ($arr['scheme'] == 'ws') {
-            $port = 'wsPort';
-            $value = 'false';
-        } else {
-            $value = 'true';
-            $port = 'wssPort';
-        }
 
         $business = User::table('wolive_business')->where('id', $business_id)->find();
         $visiter_lang = User::name('wolive_visiter')->where('visiter_id', $visiter_id)->value('lang');
@@ -366,9 +374,9 @@ class Index extends Controller
         $this->assign("atype", $business['audio_state']);
         $this->assign('groupid', $groupid);
         $this->assign('app_key', $app_key);
-        $this->assign('whost', $arr['host']);
+        $this->assign('whost', $host);
         $this->assign('value', $value);
-        $this->assign('wport', wport);
+        $this->assign('wport', $wport);
         $this->assign('port', $port);
         $this->assign('url', $url);
         $this->assign('visiter', $visiter_name);

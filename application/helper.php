@@ -23,8 +23,7 @@ if (!function_exists('colony_server')) {
     function colony_server($service_id)
     {
         $service = \think\Cache::store('redis')->get('colony_server:'.$service_id);
-
-        if (empty($redisService) && !in_array($service['host'],COLONY_HOST)){
+        if (empty($service) || !in_array($service['host'],COLONY_HOST)){
             $whost = parse_url(whost);
             $service = [
                 'host'=>$whost['host'],

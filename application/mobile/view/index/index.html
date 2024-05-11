@@ -35,6 +35,12 @@
         if (pic == "") {
             pic = "__image__/index/avatar-red2.png";
         }
+        var config ={
+            'app_key':'{$app_key}',
+            'whost':'{$whost}',
+            'value':{$value},
+            'wport':{$wport}
+        };
          var service_id=0;
         function a() {
             var e = document.getElementById("chat-message-audio-source").src
