@@ -163,9 +163,12 @@ function putfile() {
 
     var arr = value.split(".");
     var debugs =arr[1].toLowerCase();
-    if ( debugs == "js" ||  debugs == "css" ||  debugs == "html" ||  debugs == "php") {
-        layer.msg(not_supported, {icon: 2});
-    } else {
+    let  img_suffix = ['bmp','jpg','png','gif','jpeg','webp'];
+    let  video_suffix = ['avi','wmv','mpg','mpeg','mov','rm','swf','flv','mp4','ram'];
+    let suffix = [...img_suffix,...video_suffix];
+    if (!suffix.includes(debugs)) {
+        layer.msg("只支持上传图片和视频2", {icon: 2}); return;
+    }
 
 
         var myDate = new Date();
@@ -183,10 +186,10 @@ function putfile() {
                     str += '<div style="position: absolute;top: 26px;right: 2px;"><img  class="my-circle cu_pic" src="' + pic + '" width="40px" height="40px"></div>';
                     str += "<div class='outer-right'><div class='customer'>";
                     str += "<pre>";
-                    if(res.data.indexOf('.mp4')>= 0){
+                    if(video_suffix.includes(debugs)){
                         str += "<video src='" + res.data + "' controls='controls' style='width: 100%'>ERROR</video>";
                     }else{
-                        str += "<div><a href='" + res.data + "' style='display: inline-block;text-align: center;min-width: 70px;text-decoration: none;' download='" + name + "'><i class='layui-icon' style='font-size: 60px;'>&#xe61e;</i><br>" + name + "</a></div>";
+                        str += "<img class='chat-img' src='" + res.data + "' >";
                     }
                     str += "</pre>";
                     str += "</div></div>";
@@ -209,7 +212,6 @@ function putfile() {
             }
         });
 
-    }
 }
 
 

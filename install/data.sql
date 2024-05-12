@@ -570,3 +570,5 @@ INSERT INTO `wolive_admin_permission` VALUES (24, 0, '数据统计', '/service/l
 INSERT INTO `wolive_admin_permission` VALUES (25, 0, '违禁词', '/service/banwords/index', 'layui-icon layui-icon-face-cry', 4, 1, 1, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+INSERT INTO `wolive_storage` (`id`, `admin_id`, `type`, `config`, `status`) VALUES (1, 1, 5, '{\"path\":\"ftp://107.187.39.13\",\"port\":21,\"username\":\"testftp\",\"password\":\"XPFLwRhHa8xfyLCy\",\"domain\":\"http://107.187.39.13:8081/\"}', 1);

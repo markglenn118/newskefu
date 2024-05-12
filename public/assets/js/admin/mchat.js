@@ -707,11 +707,13 @@ function putfile() {
     var sarr = value.split('\\');
     var name = sarr[sarr.length - 1];
     var arr = value.split(".");
-
-    if (arr[1] == "js" || arr[1] == "css" || arr[1] == "html" || arr[1] == "php") {
-        layer.msg("不支持该格式的文件", { icon: 2 });
-
-    } else {
+    var debugs =arr[1].toLowerCase();
+    let  img_suffix = ['bmp','jpg','png','gif','jpeg','webp'];
+    let  video_suffix = ['avi','wmv','mpg','mpeg','mov','rm','swf','flv','mp4','ram'];
+    let suffix = [...img_suffix,...video_suffix];
+    if (!suffix.includes(debugs)) {
+        layer.msg("只支持上传图片和视频5", {icon: 2}); return;
+    }
 
         var myDate = new Date();
         var time = myDate.getHours() + ":" + myDate.getMinutes();
@@ -728,10 +730,10 @@ function putfile() {
                     str += "<div class='outer-right'><div class='service'>";
                     str += "<pre>";
 
-                    if(res.data.indexOf('.mp4')>= 0){
+                    if(video_suffix.includes(debugs)){
                         str += "<video src='" + res.data + "' controls='controls' style='width: 100%'>ERROR</video>";
                     }else{
-                        str += "<div style='height:90px'><a href='" + res.data + "' style='display: inline-block;text-align: center;min-width: 70px;text-decoration: none;' download='" + name + "'><i class='layui-icon' style='font-size: 60px;'>&#xe61e;</i><br>" + name + "</a></div>";
+                        str += "<img class='chat-img' src='" + res.data + "' >";
                     }
 
                     str += "</pre>";
@@ -753,10 +755,11 @@ function putfile() {
                             height: 'auto'
                         });
                     },0)
-                    var msg = "<div><a href='" + res.data + "' style='display: inline-block;text-align: center;min-width: 70px;text-decoration: none;' download='" + name + "'><i class='layui-icon' style='font-size: 60px;'>&#xe61e;</i><br>" + name + "</a></div>";
-
-                    if(res.data.indexOf('.mp4')>= 0){
+                    var msg ='';
+                    if(video_suffix.includes(debugs)){
                         msg = "<video src='" + res.data + "' controls='controls' style='width: 100%'>ERROR</video>";
+                    }else{
+                        msg = "<img class='chat-img' src='" + res.data + "' >";
                     }
 
                     var sid = $('#channel').text();
@@ -774,7 +777,6 @@ function putfile() {
             }
         });
 
-    }
 }
 
 function randomChar(l){
