@@ -312,12 +312,12 @@ CREATE TABLE `wolive_queue`  (
 DROP TABLE IF EXISTS `wolive_reply`;
 CREATE TABLE `wolive_reply`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `word` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `word` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `service_id` int(11) NULL DEFAULT NULL,
   `tag` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = COMPACT;
-
+-- ALTER TABLE `wolive_reply` MODIFY COLUMN `word` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER `id`;
 -- ----------------------------
 -- Table structure for wolive_rest_setting
 -- ----------------------------
@@ -568,6 +568,7 @@ INSERT INTO `wolive_admin_permission` VALUES (18, 0, '商户设置', '/service/s
 INSERT INTO `wolive_admin_permission` VALUES (23, 0, '登录日志', '/service/log/index', 'layui-icon layui-icon-layouts', 8, 1, 1, 1);
 INSERT INTO `wolive_admin_permission` VALUES (24, 0, '数据统计', '/service/log/data', 'layui-icon layui-icon-senior', 8, 1, 1, 1);
 INSERT INTO `wolive_admin_permission` VALUES (25, 0, '违禁词', '/service/banwords/index', 'layui-icon layui-icon-face-cry', 4, 1, 1, 1);
+INSERT INTO `wolive_admin_permission` VALUES (26, 0, '快捷回复设置', '/service/chat/wolive', 'layui-icon layui-icon-release', 6, 1, 1, 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
 

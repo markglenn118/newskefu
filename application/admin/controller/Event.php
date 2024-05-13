@@ -1551,4 +1551,26 @@ class Event extends Controller
             ]);
         }
     }
+
+    /**
+     * 图片上传.
+     *
+     * @return false|string [type] [description]
+     */
+    public function uploadImage()
+    {
+        try {
+            Storage::$variable = 'editormd-image-file';
+            $url = Storage::put();
+            $data = [
+                "success" => 1,
+                "message" => "",
+                "url" => $url['url']
+            ];
+        } catch (\Exception $e) {
+            $data = ['success'=> 0,'message'=>$this->lang_array['save_file_error']];
+        }
+        return json_encode($data);
+    }
+
 }
