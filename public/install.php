@@ -275,6 +275,32 @@ foreach ($dirarray as $key => $dir) {
             <div class="col-md-4">
                 <fieldset>
                     <legend>
+                        <small>填写 redis 信息</small>
+                    </legend>
+                    <div class="form-group">
+                        <label class="control-label" for="dbHost">服务地址</label>
+                        <input type="text" class="form-control" id="redis_host" name="redis_host"
+                               value="<?php if (isset($_POST['redis_host'])) echo $_POST['redis_host']; else echo '127.0.0.1'; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="dbName">端口号</label>
+                        <input type="text" class="form-control" id="redis_port" name="redis_port"
+                               value="<?php if (isset($_POST['redis_port'])) echo $_POST['redis_port']; ?>"
+                             >
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="dbPass">密码</label>
+                        <input type="text" class="form-control" id="redis_pwd" name="redis_pwd"
+                               value="<?php if (isset($_POST['redis_pwd'])) echo $_POST['redis_pwd']; ?>"
+                               >
+                    </div>
+
+
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <legend>
                         <small>填写数据库信息</small>
                     </legend>
                     <div class="form-group">
@@ -603,6 +629,13 @@ define('appsecret','');
 define('token','');
 define('domain','{$domain}');
 
+//redis服务配置
+define(‘REDIS’, [
+        'host'=> {$redis_host},
+        'port'=> {$redis_port},
+        'pwd'=> {$redis_pwd}]
+);
+
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';");
             file_put_contents(__DIR__.'/../service/config.php',"<?php
@@ -624,6 +657,18 @@ require __DIR__ . '/../thinkphp/start.php';");
 // Api 端口，用于后端与pusher通讯
 \$api_port = $aport;
 
+//当前服务的域名或ip
+define('HOST_INFO', [
+    'host'=>'http://192.168.101.196',
+    'port'=> \$api_port]
+);
+
+//redis服务配置
+define(‘REDIS’, [
+        'host'=> {$redis_host},
+        'port'=> {$redis_port},
+        'pwd'=> {$redis_pwd}]
+);
 ");
 
 

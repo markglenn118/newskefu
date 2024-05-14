@@ -1,5 +1,6 @@
 <?php
 namespace Pusher;
+use Push\Push;
 use Workerman\Worker;
 use Workerman\Lib\Timer;
 use Workerman\Protocols\Http;
@@ -97,6 +98,8 @@ class Pusher extends Worker
      */
     protected $_globalID = 1;
 
+    protected $redis;
+
     /**
      * 构造函数
      *
@@ -110,6 +113,11 @@ class Pusher extends Worker
         $this->onMessage = array($this, 'onClientMessage');
         $this->onClose   = array($this, 'onClientClose');
         $this->onWorkerStart = array($this, 'onStart');
+        $this->redis = new \Redis();
+        $this->redis->connect(REDIS['host'],REDIS['port']);
+        if (!empty(REDIS['pwd'])){
+            $this->redis->auth(REDIS['pwd']);
+        }
     }
 
     /**
@@ -217,6 +225,10 @@ class Pusher extends Worker
      */
     public function onClientMessage($connection, $data)
     {
+        $dataArr = json_decode($data,true);
+        if (!empty($dataArr['data']['channel'])){
+            $this->redis->set($dataArr['data']['channel'],json_encode(HOST_INFO));
+        }
         $connection->clientNotSendPingCount = 0;
         if ('{"event":"pusher:ping","data":{}}' === $data) {
             return $connection->send('{"event":"pusher:pong","data":"{}"}');
@@ -649,51 +661,60 @@ class Pusher extends Worker
         }
 
         $app_key = $_GET['auth_key'];
-
-        switch ($type) {
-            case 'events':
-                $channels = $package['channels'];
-                $event    = $package['name'];
-                $data     = $package['data'];
-                foreach ($channels as $channel) {
-                    $socket_id = isset($package['socket_id']) ? isset($package['socket_id']) : null;
-                    $this->publishToClients($app_key, $channel, $event, $data, $socket_id);
-                }
+        foreach ($package['channels'] as $channel){
+            $redisChannel = json_decode($this->redis->get($channel),true);
+            if ($redisChannel['host'] != HOST_INFO['host'] || $redisChannel['port'] != HOST_INFO['port']){
+                $push = $this->OnConnection($redisChannel['host'],$redisChannel['port']);
+                $push->trigger($package['channels'],$package['name'],json_decode($package['data'],true));
                 return $connection->send('{}');
-            case 'get_channel_info':
-                $info               = isset($_GET['info']) ? explode(',', $_GET['info']) : array();
-                $occupied           = isset($this->_globalData[$app_key][$channel]);
-                $user_count         = $occupied ? count($this->_globalData[$app_key][$channel]['users']) : 0;
-                $subscription_count = $occupied ? $this->_globalData[$app_key][$channel]['subscription_count'] : 0;
-                $channel_info       = array(
-                    'occupied' => $occupied
-                );
-                foreach ($info as $item) {
-                    switch ($item) {
-                        case 'user_count':
-                            $channel_info['user_count'] = $user_count;
-                            break;
-                        case 'subscription_count':
-                            $channel_info['subscription_count'] = $subscription_count;
-                            break;
-                    }
-                }
-                $connection->send(json_encode($channel_info));
-                break;
-            case 'get_channel_users':
-                $id_array = isset($this->_globalData[$app_key][$channel]) ?
-                    array_keys($this->_globalData[$app_key][$channel]['users']) : array();
-                $user_id_array = array();
-                foreach ($id_array as $id) {
-                    $user_id_array[] = array('id' => $id);
-                }
+            }
 
-                $connection->send(json_encode($user_id_array));
-                break;
-            default :
-                Http::header("HTTP/1.0 400 Bad Request");
-                return $connection->send('Bad Request');
         }
+
+            switch ($type) {
+                case 'events':
+                    $channels = $package['channels'];
+                    $event    = $package['name'];
+                    $data     = $package['data'];
+                    foreach ($channels as $channel) {
+                        $socket_id = isset($package['socket_id']) ? isset($package['socket_id']) : null;
+                        $this->publishToClients($app_key, $channel, $event, $data, $socket_id);
+                    }
+                    return $connection->send('{}');
+                case 'get_channel_info':
+                    $info               = isset($_GET['info']) ? explode(',', $_GET['info']) : array();
+                    $occupied           = isset($this->_globalData[$app_key][$channel]);
+                    $user_count         = $occupied ? count($this->_globalData[$app_key][$channel]['users']) : 0;
+                    $subscription_count = $occupied ? $this->_globalData[$app_key][$channel]['subscription_count'] : 0;
+                    $channel_info       = array(
+                        'occupied' => $occupied
+                    );
+                    foreach ($info as $item) {
+                        switch ($item) {
+                            case 'user_count':
+                                $channel_info['user_count'] = $user_count;
+                                break;
+                            case 'subscription_count':
+                                $channel_info['subscription_count'] = $subscription_count;
+                                break;
+                        }
+                    }
+                    $connection->send(json_encode($channel_info));
+                    break;
+                case 'get_channel_users':
+                    $id_array = isset($this->_globalData[$app_key][$channel]) ?
+                        array_keys($this->_globalData[$app_key][$channel]['users']) : array();
+                    $user_id_array = array();
+                    foreach ($id_array as $id) {
+                        $user_id_array[] = array('id' => $id);
+                    }
+
+                    $connection->send(json_encode($user_id_array));
+                    break;
+                default :
+                    Http::header("HTTP/1.0 400 Bad Request");
+                    return $connection->send('Bad Request');
+            }
     }
 
     public function webHookCheck()
@@ -900,4 +921,16 @@ class Pusher extends Worker
         Timer::add(10, array($client, 'close'), null, false);
         $client->connect();
     }
+
+    public function OnConnection($host=HOST_INFO['host'],$port=HOST_INFO['port']){
+        return new Push(
+            'f94r9nxhvuycfcc1',
+            'no56jmquzkdgepepmoxj3c69v89q9hql',
+            232,
+            ['encrypted' => false],
+            $host,
+            $port
+        );
+    }
+
 }

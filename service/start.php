@@ -4,8 +4,9 @@ use Workerman\Lib\Timer;
 
 // composer autoload
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/src/Pusher.php';
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/src/Pusher.php';
+require_once __DIR__ . '/src/Push.php';
 
 //WSS证书', '一般为fullchain.pem，宝塔默认位置：/www/server/panel/vhost/ssl/YOU DOMAIN/fullchain.pem'
 $ws_ssl_cert='';

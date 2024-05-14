@@ -205,9 +205,9 @@ return [
     'cache' => [
         // 驱动方式
         'type' => 'Redis',
-        'host'       => '127.0.0.1', // redis主机
-        'port'       =>  6379, // 端口
-        'password'   =>  '', // 密码
+        'host'       => REDIS['host'], // redis主机
+        'port'       =>  REDIS['port'], // 端口
+        'password'   =>  REDIS['pwd'], // 密码
         'select'     =>  0, // 选择数据库
         'timeout'    =>  0, // 超时时间
         'expire'     =>  0, // 有效期(秒)
