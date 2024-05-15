@@ -68,7 +68,14 @@ class Index extends Controller
         $host = ahost;
         $port = aport;
 
-
+        $pusher = new Pusher(
+            $app_key,
+            $app_secret,
+            $app_id,
+            $options,
+            $host,
+            $port
+        );
 
         $app_key = app_key;
         $whost = whost;
@@ -172,6 +179,17 @@ class Index extends Controller
         $options = array(
             'encrypted' => $state
         );
+        $host = ahost;
+        $port = aport;
+
+        $pusher = new Pusher(
+            $app_key,
+            $app_secret,
+            $app_id,
+            $options,
+            $host,
+            $port
+        );
 
         $business_id = $arr2['business_id'];
         $visiter_id = $arr2['visiter_id'];
@@ -213,15 +231,6 @@ class Index extends Controller
                         $str .= '<p class="wolive_info">' . $content['info'] . '</p>';
                         $str .= '</div></a>';
                         $mydata = ['service_id' => $service_id, 'visiter_id' => $visiter_id, 'content' => $str, 'timestamp' => time(), 'business_id' => $business_id, 'direction' => 'to_service'];
-                        $colonyServer = colony_server($service_id);
-                        $pusher = new Pusher(
-                            $app_key,
-                            $app_secret,
-                            $app_id,
-                            $options,
-                            $colonyServer['ahost'],
-                            $colonyServer['aport']
-                        );
                         $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $mydata));
                         $chats = User::table('wolive_chats')->insert($mydata);
                     }
@@ -244,15 +253,6 @@ class Index extends Controller
                         $str .= '<p class="wolive_info">' . $content['info'] . '</p>';
                         $str .= '</div></a>';
                         $mydata = ['service_id' => $service_id, 'visiter_id' => $visiter_id, 'content' => $str, 'timestamp' => time(), 'business_id' => $business_id, 'direction' => 'to_service'];
-                        $colonyServer = colony_server($service_id);
-                        $pusher = new Pusher(
-                            $app_key,
-                            $app_secret,
-                            $app_id,
-                            $options,
-                            $colonyServer['ahost'],
-                            $colonyServer['aport']
-                        );
                         $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $mydata));
                         $chats = User::table('wolive_chats')->insert($mydata);
 
@@ -280,15 +280,6 @@ class Index extends Controller
                         $str .= '<p class="wolive_info">' . $content['info'] . '</p>';
                         $str .= '</div></a>';
                         $mydata = ['service_id' => $service_id, 'visiter_id' => $visiter_id, 'content' => $str, 'timestamp' => time(), 'business_id' => $business_id, 'direction' => 'to_service'];
-                        $colonyServer = colony_server($service_id);
-                        $pusher = new Pusher(
-                            $app_key,
-                            $app_secret,
-                            $app_id,
-                            $options,
-                            $colonyServer['ahost'],
-                            $colonyServer['aport']
-                        );
                         $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $mydata));
                         $chats = User::table('wolive_chats')->insert($mydata);
                     }
@@ -310,15 +301,6 @@ class Index extends Controller
                         $str .= '<p class="wolive_info">' . $content['info'] . '</p>';
                         $str .= '</div></a>';
                         $mydata = ['service_id' => $service_id, 'visiter_id' => $visiter_id, 'content' => $str, 'timestamp' => time(), 'business_id' => $business_id, 'direction' => 'to_service'];
-                        $colonyServer = colony_server($service_id);
-                        $pusher = new Pusher(
-                            $app_key,
-                            $app_secret,
-                            $app_id,
-                            $options,
-                            $colonyServer['ahost'],
-                            $colonyServer['aport']
-                        );
                         $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $mydata));
                         $chats = User::table('wolive_chats')->insert($mydata);
                     }

@@ -128,6 +128,17 @@ class Index extends Controller
         $options = array(
             'encrypted' => $state
         );
+        $host = ahost;
+        $port = aport;
+
+        $pusher = new Pusher(
+            $app_key,
+            $app_secret,
+            $app_id,
+            $options,
+            $host,
+            $port
+        );
 
         $common = new Common();
 
@@ -158,15 +169,7 @@ class Index extends Controller
         if (!isset($arr2['visiter_id']) || !isset($arr2['visiter_name']) || !isset($arr2['product']) || !isset($arr2['groupid']) || !isset($arr2['business_id']) || !isset($arr2['avatar'])) {
             $this->redirect(request()->root().'/index/index/errors');
         }
-        $colonyServer = colony_server($arr2['special']);
-        $pusher = new Pusher(
-            $app_key,
-            $app_secret,
-            $app_id,
-            $options,
-            $colonyServer['ahost'],
-            $colonyServer['aport']
-        );
+
         $theme=isset($arr2['theme'])?$arr2['theme']:'13c9cb';
 
         if ($is_mobile) {
@@ -181,11 +184,11 @@ class Index extends Controller
         }
         $business_id = htmlspecialchars($arr2['business_id']);
         $visiter_id = htmlspecialchars($arr2['visiter_id']);
-                if ($visiter_id === '') {
-                    $visiter_id=cookie('visiter_id');
-                    if (!$visiter_id) {
-                        $visiter_id = bin2hex(pack('N', time())).strtolower($common->rand(8));
-                        cookie('visiter_id', $visiter_id, 63072000);
+        if ($visiter_id === '') {
+            $visiter_id=cookie('visiter_id');
+            if (!$visiter_id) {
+                $visiter_id = bin2hex(pack('N', time())).strtolower($common->rand(8));
+                cookie('visiter_id', $visiter_id, 63072000);
             }
         }
 
@@ -363,10 +366,9 @@ class Index extends Controller
         $this->assign("type", $business['video_state']);
         $this->assign("atype", $business['audio_state']);
         $this->assign('app_key', $app_key);
-        $colonyServer = colony_server($arr2['special']);
-        $this->assign('whost', $colonyServer['host']);
+        $this->assign('whost', $arr['host']);
         $this->assign('value', $value);
-        $this->assign('wport',  $colonyServer['wport']);
+        $this->assign('wport', wport);;
         $this->assign('port', $port);
         $this->assign('url', $url);
         $this->assign('groupid', $groupid);

@@ -195,12 +195,7 @@ class Login extends Controller
         );
         $host = ahost;
         $port = aport;
-        $ws = $this->request->get('ws');
-        if (!empty($ws) && $ws != $host){
-            $host = $ws;
-            $colonyHostKey = array_search($ws,COLONY_HOST);
-            $port = COLONY_APORT[$colonyHostKey];
-        }
+
         $pusher = new Pusher(
             $app_key,
             $app_secret,

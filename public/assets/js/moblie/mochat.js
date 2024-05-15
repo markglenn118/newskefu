@@ -416,7 +416,7 @@ var init = function () {
     $.ajax({
         url:ROOT_URL+"/admin/event/notice",
         type: 'post',
-        data: {visiter_id:visiter_id, visiter_name: visiter, business_id: business_id, from_url: record, avatar: pic,groupid:cid,special:special,host:config.web_host},
+        data: {visiter_id:visiter_id, visiter_name: visiter, business_id: business_id, from_url: record, avatar: pic,groupid:cid,special:special},
         dataType:'json',
         async: false,
         success: function (res) {
