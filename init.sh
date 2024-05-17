@@ -5,7 +5,6 @@ result=$(crontab -l|grep -i "* * * * * sh $basepath/run.sh"|grep -v grep)
 if [ ! -n "$result" ]
 then
 crontab -l > conf && echo "* * * * * sh $basepath/run.sh >/dev/null 2>&1" >> conf && crontab conf && rm -f conf
-crontab -l > conf && echo "* 8 * * * php $basepath/think Chats >/dev/null 2>&1" >> conf && crontab conf && rm -f conf
 echo -e "\033[32mOk.\033[0m"
 else
 echo "The process has been add ."
