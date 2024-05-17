@@ -1,11 +1,15 @@
 <?php
 namespace Pusher;
-use Push\Push;
+use Bunny\Channel;
+use Bunny\Message;
+use Bunny\Protocol\MethodConfirmSelectOkFrame;
+use RedisException;
+use Workerman\RabbitMQ\Client;
 use Workerman\Worker;
 use Workerman\Lib\Timer;
 use Workerman\Protocols\Http;
 use Workerman\Connection\AsyncTcpConnection;
-
+use Bunny\Protocol\MethodQueueDeclareOkFrame;
 
 class Pusher extends Worker 
 {
@@ -99,39 +103,106 @@ class Pusher extends Worker
     protected $_globalID = 1;
 
     protected $redis;
-
+    public $mq =null;
     /**
      * 构造函数
      *
      * @param string $socket_name
      * @param array $context
+     * @throws RedisException
      */
     public function __construct($socket_name, $context = array())
     {
-        parent::__construct($socket_name, $context);
-        $this->onConnect = array($this, 'onClientConnect');
-        $this->onMessage = array($this, 'onClientMessage');
-        $this->onClose   = array($this, 'onClientClose');
-        $this->onWorkerStart = array($this, 'onStart');
         $this->redis = new \Redis();
         $this->redis->connect(REDIS['host'],REDIS['port']);
         if (!empty(REDIS['pwd'])){
             $this->redis->auth(REDIS['pwd']);
         }
+        parent::__construct($socket_name, $context);
+        $this->onConnect = array($this, 'onClientConnect');
+        $this->onMessage = array($this, 'onClientMessage');
+        $this->onClose   = array($this, 'onClientClose');
+        $this->onWorkerStart = array($this, 'onStart');
     }
 
     /**
      * 进程启动后初始化事件分发器客户端
      *
+     * @param $connection
      * @return void
+     * @throws \Exception
      */
-    public function onStart()
+    public function onStart($connection)
     {
         $api_worker = new Worker($this->apiListen);
         $api_worker->onMessage = array($this, 'onApiClientMessage');
         $api_worker->listen();
         Timer::add($this->keepAliveTimeout/2, array($this, 'checkHeartbeat'));
         Timer::add($this->webHookDelay, array($this, 'webHookCheck'));
+        $this->receive();
+    }
+
+    /** 异步消费消息
+     * @return void
+     */
+    public function receive()
+    {
+        (new Client(RABBITMQ))->connect()->then(function (Client $client) {
+            return $client->channel();
+        })->then(function (Channel $channel) {
+            return $channel->exchangeDeclare('kefu', 'fanout')->then(function () use ($channel) {
+                return $channel->queueDeclare('', false, false, true, false);
+            })->then(function (MethodQueueDeclareOkFrame $frame) use ($channel) {
+                return $channel->queueBind($frame->queue, 'kefu')->then(function () use ($frame) {
+                    return $frame;
+                });
+            })->then(function (MethodQueueDeclareOkFrame $frame) use ($channel) {
+                $channel->consume(
+                    function (Message $message, Channel $channel, Client $client) {
+                        $msg = json_decode($message->content, true);
+                        foreach ($msg['channels'] as $value) {
+                            if (isset($this->_eventClients[$msg['app_key']][$value])) {
+                                $this->onMqClientMessage($msg,$value);
+                            }
+                        }
+                        $channel->ack($message);
+                    },
+                    $frame->queue,
+                    '',
+                    false,
+                    false
+                );
+            });
+        });
+    }
+
+    /** 发送消息到客户端
+     * @param $package
+     * @param $value
+     * @throws RedisException
+     */
+    protected function onMqClientMessage($package,$value)
+    {
+        $socket_id = isset($package['socket_id']) ?: null;
+        $data = json_encode(array(
+            'event'   => $package['name'],
+            'data'    => $package['data'],
+            'channel' => $value
+        ));
+        $this->redis->set(md5($data),0);
+        foreach ($this->_eventClients[$package['app_key']][$value] as $connection) {
+            if ($connection->socketID === $socket_id) {
+                continue;
+            }
+            $connection->clientNotSendPingCount = 0;
+            send:
+            // {"event":"my-event","data":"{\"message\":\"hello world\"}","channel":"my-channel"}
+            $res = $connection->send($data);
+            if (!$res && $this->redis->get(md5($data)) <3){
+                $this->redis->incr(md5($data),1);
+                goto send;
+            }
+        }
     }
 
     /**
@@ -225,10 +296,6 @@ class Pusher extends Worker
      */
     public function onClientMessage($connection, $data)
     {
-        $dataArr = json_decode($data,true);
-        if (!empty($dataArr['data']['channel'])){
-            $this->redis->set($dataArr['data']['channel'],json_encode(HOST_INFO));
-        }
         $connection->clientNotSendPingCount = 0;
         if ('{"event":"pusher:ping","data":{}}' === $data) {
             return $connection->send('{"event":"pusher:pong","data":"{}"}');
@@ -662,15 +729,13 @@ class Pusher extends Worker
 
         $app_key = $_GET['auth_key'];
         foreach ($package['channels'] as $channel){
-            $redisChannel = json_decode($this->redis->get($channel),true);
-            if ($redisChannel['host'] != HOST_INFO['host'] || $redisChannel['port'] != HOST_INFO['port']){
-                $push = $this->OnConnection($redisChannel['host'],$redisChannel['port']);
-                $push->trigger($package['channels'],$package['name'],json_decode($package['data'],true));
+//            if (!isset($this->_eventClients[$app_key][$channel])) {
+                $package['app_key'] = $app_key;
+                $this->redis->set(md5(json_encode($package)),0);
+                $this->SendMq('kefu',json_encode($package));
                 return $connection->send('{}');
-            }
-
+//            }
         }
-
             switch ($type) {
                 case 'events':
                     $channels = $package['channels'];
@@ -715,6 +780,46 @@ class Pusher extends Worker
                     Http::header("HTTP/1.0 400 Bad Request");
                     return $connection->send('Bad Request');
             }
+    }
+
+    /** 推送消息到 MQ
+     * @return void
+     */
+    public function SendMq($key,$data)
+    {
+        // 生成唯一标识符
+        $messageId = md5($data);
+        (new Client(RABBITMQ))->connect()->then(function (Client $client) {
+            return $client->channel();
+        })->then(function (Channel $channel) use($key) {
+            return $channel->exchangeDeclare($key, 'fanout')->then(function () use ($channel) {
+                return $channel;
+            });
+        })->then(function (Channel $channel){
+            return $channel->confirmSelect()->then(function () use($channel){
+               return $channel;
+            });
+        })->then(function (Channel $channel) use ($data,$key,$messageId) {
+            $this->redis->incr(md5($data),1);
+            return $channel->publish($data, ['message_id' => $messageId], $key)->then(function () use ($key,$data) {
+                echo " [x] Sent '{$data}'\n";
+            },
+                function (\Exception $e) use ($key,$data) {
+                    echo " [x] Failed to send '{$data}': ", $e->getMessage(), "\n";
+                    if ($this->redis->get(md5($data)) <3){
+                        $this->SendMq($key,$data);
+                    }
+                })->then(function () use ($channel) {
+                return $channel;
+            });
+        })->then(function (Channel $channel) use ($data) {
+            $client = $channel->getClient();
+            return $channel->close()->then(function () use ($client) {
+                return $client;
+            });
+        })->then(function (Client $client) {
+            $client->disconnect();
+        });
     }
 
     public function webHookCheck()
@@ -920,17 +1025,6 @@ class Pusher extends Worker
         };
         Timer::add(10, array($client, 'close'), null, false);
         $client->connect();
-    }
-
-    public function OnConnection($host=HOST_INFO['host'],$port=HOST_INFO['port']){
-        return new Push(
-            'f94r9nxhvuycfcc1',
-            'no56jmquzkdgepepmoxj3c69v89q9hql',
-            232,
-            ['encrypted' => false],
-            $host,
-            $port
-        );
     }
 
 }
