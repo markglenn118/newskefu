@@ -196,7 +196,8 @@ class Index extends Controller
         $arr2['product'] = htmlspecialchars_decode($arr2['product']);
         if (trim($visiter_id) == '') {
             $visiter_id=cookie('visiter_id');
-            if (!$visiter_id) {
+            $cacheVisitId = \think\Cache::store('redis')->get('visiter_id:'.$visiter_id);
+            if (!$cacheVisitId) {
                 $visiter = Db::name('wolive_visiter')->where(['ip'=>$this->request->ip()])->find();
                 if($visiter){
                     $visiter_id = $visiter['visiter_id'];
@@ -204,10 +205,15 @@ class Index extends Controller
                     $common = new Common();
                     $visiter_id = bin2hex(pack('N', time())).strtolower($common->rand(8));
                 }
-                cookie('visiter_id', $visiter_id, 28800);
+                cookie('visiter_id', $visiter_id, CACHE_VISIT);
+                \think\Cache::store('redis')->set('visiter_id:'.$visiter_id,$visiter_id,CACHE_VISIT);
             }
         }else{
-            cookie('visiter_id', $visiter_id, 28800);
+            $cacheVisitId = \think\Cache::store('redis')->get('visiter_id:'.$visiter_id);
+            if (!$cacheVisitId) {
+                \think\Cache::store('redis')->set('visiter_id:'.$visiter_id,$visiter_id,CACHE_VISIT);
+                cookie('visiter_id', $visiter_id, CACHE_VISIT);
+            }
         }
 
         if ($visiter_id) {

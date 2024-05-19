@@ -58,6 +58,7 @@ define("REDIS", [
         'port'=> 6379,
         'pwd'=> '1234']
 );
-
+//访客会话保存时长（秒）
+define('CACHE_VISIT',28800);
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';
