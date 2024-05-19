@@ -600,6 +600,13 @@ $content='';
     }
 
     /**
+     * 查询谷歌验证码是否绑定
+     */
+    public function getCode(){
+        $service = Service::where('service_id',$this->request->get('service_id'))->find();
+        $this->success('成功','',$service);
+    }
+    /**
      * 绑定谷歌验证码
      */
     public function bind(){
@@ -626,6 +633,7 @@ $content='';
             $google_url = $Googl->getQRCodeGoogleUrl($nickname,$secret);
             Service::where("service_id",$this->request->get('service_id'))->update(['google_secret'=>$secret,'another_name'=>$nickname,'google_url'=>$google_url]);
             $this->log('[客服账号]生成客服【'.$service['nick_name'].'】的谷歌二维码');
+            $service = Service::where('service_id',$this->request->get('service_id'))->find();
         }
         $this->assign('google_url', $google_url);
         $this->assign('google_secret', $service['google_secret']);
