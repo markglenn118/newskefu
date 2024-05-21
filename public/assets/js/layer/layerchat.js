@@ -164,9 +164,12 @@ function putfile() {
 
     var arr = value.split(".");
     var debugs =arr[1].toLowerCase();
-    if ( debugs == "js" ||  debugs == "css" ||  debugs == "html" ||  debugs == "php") {
-        layer.msg("不支持该格式的文件", {icon: 2});
-    } else {
+    let  img_suffix = ['bmp','jpg','png','gif','jpeg','webp'];
+    let  video_suffix = ['avi','wmv','mpg','mpeg','mov','rm','swf','flv','mp4','ram'];
+    let suffix = [...img_suffix,...video_suffix];
+    if (!suffix.includes(debugs)) {
+        layer.msg("只支持上传图片和视频3", {icon: 2}); return;
+    }
         var myDate = new Date();
         var time =  myDate.getHours()+":"+myDate.getMinutes();
 
@@ -182,10 +185,10 @@ function putfile() {
                     str += '<div class="" style="position: absolute;top: 26px;right: 2px;"><img  class="my-circle cu_pic" src="' + pic + '" width="40px" height="40px"></div>';
                     str += "<div class='outer-right' style='right: 15%;'><div class='customer'>";
                     str += "<pre>";
-                    if(res.data.indexOf('.mp4')>= 0){
+                    if(video_suffix.includes(debugs)){
                         str += "<video src='" + res.data + "' controls='controls' style='width: 100%'>ERROR</video>";
                     }else{
-                        str += "<div><a href='" + res.data + "' style='display: inline-block;text-align: center;min-width: 70px;text-decoration: none;' download='" + name + "'><i class='layui-icon' style='font-size: 60px;'>&#xe61e;</i><br>" + name + "</a></div>";
+                        str += "<img class='chat-img' src='" + res.data + "' >";
                     }
                     str += "</pre>";
                     str += "</div></div>";
@@ -194,7 +197,12 @@ function putfile() {
                     $(".conversation").append(str);
                     var div = document.getElementById("wrap");
                     div.scrollTop = div.scrollHeight;
-                    var msg = "<div><a href='" + res.data + "' style='display: inline-block;text-align: center;min-width: 70px;text-decoration: none;' download='" + name + "'><i class='layui-icon' style='font-size: 60px;'>&#xe61e;</i><br>" + name + "</a></div>";
+                    var msg ='';
+                    if(video_suffix.includes(debugs)){
+                        msg = "<video src='" + res.data + "' controls='controls' style='width: 100%'>ERROR</video>";
+                    }else{
+                        msg = "<img class='chat-img' src='" + res.data + "' >";
+                    }
                     var se = $('#services').text();
                     if(se){
                         var sid =$.cookie('services');
@@ -208,7 +216,6 @@ function putfile() {
             }
         });
 
-    }
 }
 
 
@@ -553,6 +560,9 @@ function getnums(id){
 var send = function () {
     //获取 游客id
     var msg = $("#text_in").val();
+    if (msg.includes('http://') || msg.includes('https://')){
+        layer.msg('禁止发送带有链接的消息!'); return;
+    }
     var reg = new RegExp( '<' , "g" )
     var msg2 =msg.replace(reg,'&lt;');
 

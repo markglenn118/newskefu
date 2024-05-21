@@ -275,6 +275,32 @@ foreach ($dirarray as $key => $dir) {
             <div class="col-md-4">
                 <fieldset>
                     <legend>
+                        <small>填写 redis 信息</small>
+                    </legend>
+                    <div class="form-group">
+                        <label class="control-label" for="dbHost">服务地址</label>
+                        <input type="text" class="form-control" id="redis_host" name="redis_host"
+                               value="<?php if (isset($_POST['redis_host'])) echo $_POST['redis_host']; else echo '127.0.0.1'; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="dbName">端口号</label>
+                        <input type="text" class="form-control" id="redis_port" name="redis_port"
+                               value="<?php if (isset($_POST['redis_port'])) echo $_POST['redis_port']; ?>"
+                             >
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="dbPass">密码</label>
+                        <input type="text" class="form-control" id="redis_pwd" name="redis_pwd"
+                               value="<?php if (isset($_POST['redis_pwd'])) echo $_POST['redis_pwd']; ?>"
+                               >
+                    </div>
+
+
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <legend>
                         <small>填写数据库信息</small>
                     </legend>
                     <div class="form-group">
@@ -299,6 +325,75 @@ foreach ($dirarray as $key => $dir) {
                         <input type="text" class="form-control" id="dbPass" name="dbPass"
                                value="<?php if (isset($_POST['dbPass'])) echo $_POST['dbPass']; ?>"
                                placeholder="Database Password">
+                    </div>
+
+
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <legend>
+                        <small>填写 rabbitmq 信息</small>
+                    </legend>
+                    <div class="form-group">
+                        <label class="control-label" for="dbHost">服务地址</label>
+                        <input type="text" class="form-control" id="rabbitmq_host" name="rabbitmq_host"
+                               value="<?php if (isset($_POST['rabbitmq_host'])) echo $_POST['rabbitmq_host']; else echo '127.0.0.1'; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="dbName">端口号</label>
+                        <input type="text" class="form-control" id="rabbitmq_port" name="rabbitmq_port"
+                               value="<?php if (isset($_POST['rabbitmq_port'])) echo $_POST['rabbitmq_port']; ?>"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="dbPass">用户名</label>
+                        <input type="text" class="form-control" id="rabbitmq_user" name="rabbitmq_user"
+                               value="<?php if (isset($_POST['rabbitmq_user'])) echo $_POST['rabbitmq_user']; ?>"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="dbPass">密码</label>
+                        <input type="text" class="form-control" id="rabbitmq_password" name="rabbitmq_password"
+                               value="<?php if (isset($_POST['rabbitmq_password'])) echo $_POST['rabbitmq_password']; ?>"
+                        >
+                    </div>
+
+
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <legend>
+                        <small>填写 FTP 信息</small>
+                    </legend>
+                    <div class="form-group">
+                        <label class="control-label" for="ftp_path">服务地址</label>
+                        <input type="text" class="form-control" id="ftp_path" name="ftp_path"
+                               value="<?php if (isset($_POST['ftp_path'])) echo $_POST['ftp_path']; else echo '127.0.0.1'; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="ftp_port">端口号</label>
+                        <input type="text" class="form-control" id="ftp_port" name="ftp_port"
+                               value="<?php if (isset($_POST['ftp_port'])) echo $_POST['ftp_port']; ?>"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="ftp_user">用户名</label>
+                        <input type="text" class="form-control" id="ftp_user" name="ftp_user"
+                               value="<?php if (isset($_POST['ftp_user'])) echo $_POST['ftp_user']; ?>"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="ftp_password">密码</label>
+                        <input type="text" class="form-control" id="ftp_password" name="ftp_password"
+                               value="<?php if (isset($_POST['ftp_password'])) echo $_POST['ftp_password']; ?>"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="ftp_domain">访问地址</label>
+                        <input type="text" class="form-control" id="ftp_domain" name="ftp_domain"
+                               value="<?php if (isset($_POST['ftp_domain'])) echo $_POST['ftp_domain']; else echo 'http://127.0.0.1/'; ?>">
                     </div>
 
 
@@ -603,6 +698,25 @@ define('appsecret','');
 define('token','');
 define('domain','{$domain}');
 
+//redis服务配置
+const REDIS = [
+        'host'=> '{$redis_host}',
+        'port'=> {$redis_port},
+        'pwd'=> '{$redis_pwd}'
+        ];
+//访客会话保存时长（秒）
+define('CACHE_VISIT',28800);
+
+//FTP 服务配置
+define('FTP', [
+        'path'=>'{$ftp_path}',
+        'port'=> {$ftp_port},
+        'username'=> '{$ftp_user}',
+        'password'=> '{$ftp_password}',
+        'domain'=> '{$ftp_domain}', //http://107.187.39.13:8081/
+    ]
+);
+
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';");
             file_put_contents(__DIR__.'/../service/config.php',"<?php
@@ -624,6 +738,22 @@ require __DIR__ . '/../thinkphp/start.php';");
 // Api 端口，用于后端与pusher通讯
 \$api_port = $aport;
 
+
+//redis服务配置
+const REDIS = [
+        'host'=> '{$redis_host}',
+        'port'=> {$redis_port},
+        'pwd'=> '{$redis_pwd}'
+        ];
+
+//rabbitmq 服务配置
+const RABBITMQ = [
+       'host' => '{$rabbitmq_host}',
+       'port' => {$rabbitmq_port},
+       'vhost' => '/',
+       'user' => '{$rabbitmq_user}',
+       'password' => '{$rabbitmq_password}',
+      ];
 ");
 
 

@@ -46,7 +46,9 @@
         "xemlock/htmlpurifier-html5": "0.1.11",
         "php-angular/php-angular": "2.0.3",
         "qiniu/php-sdk": "~7.0",
-        "5ini99/think-addons": "2.1.0"
+        "5ini99/think-addons": "2.1.0",
+      "ext-ftp": "*",
+      "ext-json": "*"
     },
     "extra": {
         "think-path": "thinkphp"

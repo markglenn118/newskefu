@@ -4,43 +4,70 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit817a2bc38cf03f99268f262ffd2f5353
+class ComposerStaticInitf7ba0b12f0f1bda48e9e121739cd2853
 {
+    public static $files = array (
+        'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
         'W' => 
         array (
+            'Workerman\\RabbitMQ\\' => 19,
             'Workerman\\' => 10,
+        ),
+        'R' => 
+        array (
+            'React\\Promise\\' => 14,
+            'React\\EventLoop\\' => 16,
         ),
         'P' => 
         array (
-            'PHPSocketIO\\' => 12,
+            'Psr\\Log\\' => 8,
         ),
-        'C' => 
+        'B' => 
         array (
-            'Channel\\' => 8,
+            'Bunny\\' => 6,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'Workerman\\RabbitMQ\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/workerman/rabbitmq/src',
+        ),
         'Workerman\\' => 
         array (
             0 => __DIR__ . '/..' . '/workerman/workerman',
         ),
-        'PHPSocketIO\\' => 
+        'React\\Promise\\' => 
         array (
-            0 => __DIR__ . '/..' . '/workerman/phpsocket.io/src',
+            0 => __DIR__ . '/..' . '/react/promise/src',
         ),
-        'Channel\\' => 
+        'React\\EventLoop\\' => 
         array (
-            0 => __DIR__ . '/..' . '/workerman/channel/src',
+            0 => __DIR__ . '/..' . '/react/event-loop/src',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Bunny\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bunny/bunny/src/Bunny',
+        ),
+    );
+
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit817a2bc38cf03f99268f262ffd2f5353::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit817a2bc38cf03f99268f262ffd2f5353::$prefixDirsPsr4;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitf7ba0b12f0f1bda48e9e121739cd2853::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitf7ba0b12f0f1bda48e9e121739cd2853::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitf7ba0b12f0f1bda48e9e121739cd2853::$classMap;
 
         }, null, ClassLoader::class);
     }

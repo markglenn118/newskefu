@@ -30,15 +30,15 @@ define('CONF_PATH', __DIR__ . '/../config/');
 
 
 // 定义pusher密匙
-define('app_key','6kxtaqx2r4j9tg4u');
-define('app_secret','e0ihknxhvc8i7xqjnogqsrnjn3a7lsmb');
+define('app_key','f94r9nxhvuycfcc1');
+define('app_secret','no56jmquzkdgepepmoxj3c69v89q9hql');
 define('app_id',232);
-define('whost','ws://www.test.cn');
-define('ahost','http://www.test.cn');
+define('whost','ws://192.168.101.197');
+define('ahost','http://192.168.101.197');
 define('wport',9090);
 define('aport',2080);
-define('registToken','2125139686');
-define('AIKF_SALT','d2vtfa8xb5kbr9644x');
+define('registToken','381533248');
+define('AIKF_SALT','zt01v7vh5tk76wn8gs');
 define('AKF_VERSION','AI_KF');
 
 // 自定义一个 入口 目录
@@ -50,7 +50,25 @@ define('EXTEND_PATH','../extend/');
 define('appid','');
 define('appsecret','');
 define('token','');
-define('domain','http://www.test.cn');
+define('domain','http://192.168.101.197');
 
+//redis服务配置
+define("REDIS", [
+        'host'=>'192.168.101.194',
+        'port'=> 6379,
+        'pwd'=> '1234']
+);
+//访客会话保存时长（秒）
+define('CACHE_VISIT',60);
+
+//FTP 服务配置
+define("FTP", [
+        'path'=>'107.187.39.13',
+        'port'=> 21,
+        'username'=> 'testftp',
+        'password'=> 'XPFLwRhHa8xfyLCy',
+        'domain'=> 'http://107.187.39.13:8081/',
+    ]
+);
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';

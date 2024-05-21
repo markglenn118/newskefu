@@ -1,0 +1,9 @@
+{
+    "name": "root/service",
+    "require": {
+        "workerman/workerman": "v3.5.35",
+        "workerman/rabbitmq": "^1.0",
+      "ext-json": "*",
+        "ext-redis": "*"
+    }
+}

@@ -23,10 +23,11 @@ class Storage
     const STORAGE_TYPE_ALIOSS = 2;
     const STORAGE_TYPE_TXCOS = 3;
     const STORAGE_TYPE_QINIU = 4;
+    const STORAGE_TYPE_FTP = 5;
 
     public static $variable = 'file';
 
-    private static $play = ['Local','TxCos','AliOss','Qiniu'];
+    private static $play = ['Local','TxCos','AliOss','Qiniu','Ftp'];
     /**
      * @var array
      */
@@ -88,8 +89,8 @@ class Storage
                 //获取总帐号设置的存储位置，默认为Local
                 $ops = \app\admin\model\Storage::get(['admin_id'=>1,'status'=>1]);
                 if (empty($ops)) {
-                    self::$storage = 'Local';
-                    self::$config = [];
+                    self::$storage = 'Ftp';
+                    self::$config = FTP;
                 } else {
                     $storage = $ops['type'];
                     self::witchStorage($storage);
@@ -102,14 +103,15 @@ class Storage
                     'is_delete' => 0,
                 ]);
 
+
                 if ($business['admin_id'] != 1) {
                     $permission = json_decode($admin['permission'],true);
                     if (isset($permission['storage']) && !empty($permission['storage'])) {
                         $options = \app\admin\model\Storage::get(['admin_id'=>$admin['id'],'status' => 1]);
                         if (empty($options)) {
-                            if (in_array('Local',$permission['storage'])) {
-                                self::$storage = 'Local';
-                                self::$config = [];
+                            if (in_array('Ftp',$permission['storage'])) {
+                                self::$storage = 'Ftp';
+                                self::$config = FTP;
                             } else {
                                 throw new StorageException('未设置存储介质~');
                             }
@@ -144,6 +146,9 @@ class Storage
                 break;
             case self::STORAGE_TYPE_QINIU:
                 self::$storage = 'Qiniu';
+                break;
+            case self::STORAGE_TYPE_FTP:
+                self::$storage = 'Ftp';
                 break;
             default:
                 throw new \Exception('未知的存储位置: type=' . $type);

@@ -60,18 +60,18 @@ class Services extends Base
         return $this->fetch();
     }
     public function reset(){
-        if ($this->request->isAjax()) {
+//        if ($this->request->isAjax()) {
             $service = Db::name('wolive_service')->where('service_id',$this->request->get('service_id'))->find();
             if(!$service){
                 $this->error('数据不存在');
             }
-            $post = $this->request->post();
-            if(Service::resetBusiness($post,$service['service_id'] )) {
+            $update = ['google_bind'=>0];
+            if(\app\service\model\Service::where("service_id",$this->request->get('service_id'))->update($update)) {
                 $this->log('重置了客服昵称为【'.$service['nick_name'].'】的谷歌二维码');
                 $this->success('操作成功！');
             }
             $this->error('修改失败！');
-        }
-        return $this->fetch();
+//        }
+//        return $this->fetch();
     }
 }

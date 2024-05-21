@@ -194,13 +194,15 @@ return [
 
     'cache' => [
         // 驱动方式
-        'type' => 'File',
-        // 缓存保存目录
-        'path' => CACHE_PATH,
-        // 缓存前缀
-        'prefix' => '',
-        // 缓存有效期 0表示永久缓存
-        'expire' => 0,
+        'type' => 'Redis',
+        'host'       => REDIS['host'], // redis主机
+        'port'       =>  REDIS['port'], // 端口
+        'password'   =>  REDIS['pwd'], // 密码
+        'select'     =>  0, // 选择数据库
+        'timeout'    =>  0, // 超时时间
+        'expire'     =>  0, // 有效期(秒)
+        'persistent' => false, // 是否长链接
+        'prefix'     =>  'kefu_', // 前缀
     ],
 
     // +----------------------------------------------------------------------

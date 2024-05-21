@@ -37,8 +37,8 @@ abstract class Driver
         $this->file = request()->file(Storage::$variable);
         $this->extension = strtolower(pathinfo($this->file->getInfo('name'), PATHINFO_EXTENSION));
         $option = Option::getList('image_size,file_size', 0, 'admin');
-        if (!$this->file->checkExt(['txt','jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp','rar','zip','mp4','ogg','mov','mp3','apk'])) {
-            throw new StorageException('不支持的文件类型');
+        if (!$this->file->checkExt(['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp','avi','wmv','mpg','mpeg','mov','rm','swf','flv','mp4','ram'])) {
+            throw new StorageException('只支持上传图片和视频1');
         };
         if (in_array($this->extension,['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'])) {
             $type = 'images';

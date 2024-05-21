@@ -1,0 +1,4 @@
+ALTER TABLE `wolive_reply` MODIFY COLUMN `word` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL AFTER `id`;
+ALTER TABLE `wolive_service` ADD COLUMN `google_bind` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否绑定谷歌验证：0否 1是' AFTER `random_number`;
+INSERT INTO `wolive_admin_permission` VALUES (26, 0, '快捷回复设置', '/service/chat/wolive', 'layui-icon layui-icon-release', 6, 1, 1, 0);
+INSERT INTO `wolive_storage` (`id`, `admin_id`, `type`, `config`, `status`) VALUES (1, 1, 5, '{\"path\":\"ftp://107.187.39.13\",\"port\":21,\"username\":\"testftp\",\"password\":\"XPFLwRhHa8xfyLCy\",\"domain\":\"http://107.187.39.13:8081/\"}', 1);

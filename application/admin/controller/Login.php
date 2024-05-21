@@ -6,6 +6,7 @@ namespace app\admin\controller;
 use app\admin\model\Admins;
 use app\platform\enum\apps;
 use app\platform\model\Business;
+use think\Cache;
 use think\Controller;
 use think\captcha\Captcha;
 use think\config;
@@ -138,9 +139,10 @@ class Login extends Controller
         $_SESSION['Msg']['business'] = $business->getData();
 
         $common =new Common();
-        $expire=7*24*60*60;
+        $expire=CACHE_VISIT;
         $service_token = $common->cpEncode($login['user_name'],AIKF_SALT,$expire);
         Cookie::set('service_token', $service_token, $expire);
+        $data  =Cache::store('redis')->set('service_token:'.$login['service_id'],$service_token,$expire);
 
         $ismoblie =$common->isMobile();
 
@@ -163,6 +165,7 @@ class Login extends Controller
     {
         Cookie::delete('service_token');
       if(isset($_SESSION['Msg'])){
+          \think\Cache::store('redis')->rm('service_token:'.$_SESSION['Msg']['service_id']);
                $login = $_SESSION['Msg'];
             // 更改状态
           Cookie::delete('service_token');

@@ -498,6 +498,23 @@
             }
 
         });
+
+      $.ajax({
+        url: "/service/index/getCode?service_id={$service_id}",
+        type:"GET",
+        dataType:"json",
+        success: function(res) {
+          if (res.data.google_bind===0) {
+            layer.open({
+              type: 2,
+              title: '谷歌验证',
+              shade: 0.1,
+              area: ['500px', '500px'],
+              content: '/service/index/bind?service_id={$service_id}'
+            });
+          }
+        }
+      });
     })
 </script>
 </body>

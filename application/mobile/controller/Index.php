@@ -132,12 +132,11 @@ class Index extends Controller
             $visiter_id=cookie('visiter_id');
             if (!$visiter_id) {
                 $visiter_id = bin2hex(pack('N', time())).strtolower($common->rand(8));
-                cookie('visiter_id', $visiter_id, 63072000);
+                cookie('visiter_id', $visiter_id, 28800);
             }
         }else{
-            cookie('visiter_id', $visiter_id, 63072000);
+            cookie('visiter_id', $visiter_id, 28800);
         }
-
         if ($visiter_id) {
 
             if (!isset($_COOKIE['product_id'])) {

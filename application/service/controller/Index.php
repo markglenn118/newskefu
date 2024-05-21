@@ -5,9 +5,11 @@ namespace app\service\controller;
 
 use app\service\model\Admins;
 use app\service\model\AdminPermission;
+use app\service\model\Service;
 use app\service\model\WechatPlatform;
 use app\service\model\WechatService;
 use think\Db;
+use think\Loader;
 use think\Paginator;
 use app\Common;
 use app\extra\push\Pusher;
@@ -595,5 +597,46 @@ $content='';
             }
         }
         $this->error('未知参数');
+    }
+
+    /**
+     * 查询谷歌验证码是否绑定
+     */
+    public function getCode(){
+        $service = Service::where('service_id',$this->request->get('service_id'))->find();
+        $this->success('成功','',$service);
+    }
+    /**
+     * 绑定谷歌验证码
+     */
+    public function bind(){
+        if ($this->request->isAjax()) {
+            $post = $this->request->post();
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            $checkResult = $Googl->verifyCode($post['google_secret'], trim($post["google_code"]), 0);
+            if ($checkResult) {
+                Service::where("service_id",$this->request->get('service_id'))->update(['google_bind'=>1]);
+                $this->success('绑定谷歌验证码成功');
+            }
+            $this->error('谷歌验证失败');
+        }
+        $service = Service::where('service_id',$this->request->get('service_id'))->find();
+        if($service['google_url']){
+            $google_url = $service['google_url'];
+        }else{
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            //生成秘钥
+            $secret = $Googl->createSecret();
+            $nickname = !empty($service['another_name']) ? $service['another_name'] : $service['user_name'];
+            $google_url = $Googl->getQRCodeGoogleUrl($nickname,$secret);
+            Service::where("service_id",$this->request->get('service_id'))->update(['google_secret'=>$secret,'another_name'=>$nickname,'google_url'=>$google_url]);
+            $this->log('[客服账号]生成客服【'.$service['nick_name'].'】的谷歌二维码');
+            $service = Service::where('service_id',$this->request->get('service_id'))->find();
+        }
+        $this->assign('google_url', $google_url);
+        $this->assign('google_secret', $service['google_secret']);
+        return $this->fetch();
     }
 }

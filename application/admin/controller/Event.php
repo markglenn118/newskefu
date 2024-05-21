@@ -980,8 +980,13 @@ class Event extends Controller
         try {
             Storage::$variable = 'folder';
             $url = Storage::put();
-            $html = "<div><a href='" . $url['url'] . "' style='display: inline-block;text-align: center;min-width: 70px;text-decoration: none;' download='" . $name . "'><i class='layui-icon' style='font-size: 60px;'>&#xe61e;</i><br>" . $name . "</a></div>";
-            if(strpos($url['url'], '.mp4') !== false) $html = "<video src='{$url['url']}' controls='controls' style='width: 100%'>ERROR</video>";
+            $img_suffix = ['bmp','jpg','png','gif','jpeg','webp'];
+            $extension = pathinfo($url['url'])['extension'];
+            if (in_array($extension,$img_suffix)){
+                $html = "<img class='chat-img' src='{$url['url']}' >";
+            }else{
+                $html = "<video src='{$url['url']}' controls='controls' style='width: 100%'>ERROR</video>";
+            }
             $post['content'] = $html;
             $pusher->trigger('kefu' . $service_id, 'cu-event', array('message' => $post));
             unset($post['avatar']);
@@ -1529,4 +1534,26 @@ class Event extends Controller
             ]);
         }
     }
+
+    /**
+     * 图片上传.
+     *
+     * @return false|string [type] [description]
+     */
+    public function uploadImage()
+    {
+        try {
+            Storage::$variable = 'editormd-image-file';
+            $url = Storage::put();
+            $data = [
+                "success" => 1,
+                "message" => "",
+                "url" => $url['url']
+            ];
+        } catch (\Exception $e) {
+            $data = ['success'=> 0,'message'=>$this->lang_array['save_file_error']];
+        }
+        return json_encode($data);
+    }
+
 }

@@ -126,6 +126,8 @@ class Base extends Controller
         $this->assign('whost',$arr['host']);
         $this->assign('value', $value);
         $this->assign('wport', wport);
+        $this->assign('service_id', $login['service_id']);
+        $this->assign('google_bind', $login['google_bind']);
         $this->assign('arr', $login);
         $this->assign('data', $data);
         $this->assign('port', $port);

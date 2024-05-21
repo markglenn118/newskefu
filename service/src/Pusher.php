@@ -1,10 +1,15 @@
 <?php
 namespace Pusher;
+use Bunny\Channel;
+use Bunny\Message;
+use Bunny\Protocol\MethodConfirmSelectOkFrame;
+use RedisException;
+use Workerman\RabbitMQ\Client;
 use Workerman\Worker;
 use Workerman\Lib\Timer;
 use Workerman\Protocols\Http;
 use Workerman\Connection\AsyncTcpConnection;
-
+use Bunny\Protocol\MethodQueueDeclareOkFrame;
 
 class Pusher extends Worker 
 {
@@ -97,14 +102,22 @@ class Pusher extends Worker
      */
     protected $_globalID = 1;
 
+    protected $redis;
+    public $mq =null;
     /**
      * 构造函数
      *
      * @param string $socket_name
      * @param array $context
+     * @throws RedisException
      */
     public function __construct($socket_name, $context = array())
     {
+        $this->redis = new \Redis();
+        $this->redis->connect(REDIS['host'],REDIS['port']);
+        if (!empty(REDIS['pwd'])){
+            $this->redis->auth(REDIS['pwd']);
+        }
         parent::__construct($socket_name, $context);
         $this->onConnect = array($this, 'onClientConnect');
         $this->onMessage = array($this, 'onClientMessage');
@@ -115,15 +128,81 @@ class Pusher extends Worker
     /**
      * 进程启动后初始化事件分发器客户端
      *
+     * @param $connection
      * @return void
+     * @throws \Exception
      */
-    public function onStart()
+    public function onStart($connection)
     {
         $api_worker = new Worker($this->apiListen);
         $api_worker->onMessage = array($this, 'onApiClientMessage');
         $api_worker->listen();
         Timer::add($this->keepAliveTimeout/2, array($this, 'checkHeartbeat'));
         Timer::add($this->webHookDelay, array($this, 'webHookCheck'));
+        $this->receive();
+    }
+
+    /** 异步消费消息
+     * @return void
+     */
+    public function receive()
+    {
+        (new Client(RABBITMQ))->connect()->then(function (Client $client) {
+            return $client->channel();
+        })->then(function (Channel $channel) {
+            return $channel->exchangeDeclare('kefu', 'fanout')->then(function () use ($channel) {
+                return $channel->queueDeclare('', false, false, true, false);
+            })->then(function (MethodQueueDeclareOkFrame $frame) use ($channel) {
+                return $channel->queueBind($frame->queue, 'kefu')->then(function () use ($frame) {
+                    return $frame;
+                });
+            })->then(function (MethodQueueDeclareOkFrame $frame) use ($channel) {
+                $channel->consume(
+                    function (Message $message, Channel $channel, Client $client) {
+                        $msg = json_decode($message->content, true);
+                        foreach ($msg['channels'] as $value) {
+                            if (isset($this->_eventClients[$msg['app_key']][$value])) {
+                                $this->onMqClientMessage($msg,$value);
+                            }
+                        }
+                        $channel->ack($message);
+                    },
+                    $frame->queue,
+                    '',
+                    false,
+                    false
+                );
+            });
+        });
+    }
+
+    /** 发送消息到客户端
+     * @param $package
+     * @param $value
+     * @throws RedisException
+     */
+    protected function onMqClientMessage($package,$value)
+    {
+        $socket_id = isset($package['socket_id']) ?: null;
+        $data = json_encode(array(
+            'event'   => $package['name'],
+            'data'    => $package['data'],
+            'channel' => $value
+        ));
+        $this->redis->set(md5($data),0,22800);
+        foreach ($this->_eventClients[$package['app_key']][$value] as $connection) {
+            if ($connection->socketID === $socket_id) {
+                continue;
+            }
+            $connection->clientNotSendPingCount = 0;
+            send:
+            // {"event":"my-event","data":"{\"message\":\"hello world\"}","channel":"my-channel"}
+            $res = $connection->send($data);
+            if (!$res && $this->redis->get(md5($data)) <3){
+                $this->redis->incr(md5($data),1);
+                goto send;
+            }
+        }
     }
 
     /**
@@ -649,51 +728,98 @@ class Pusher extends Worker
         }
 
         $app_key = $_GET['auth_key'];
-
-        switch ($type) {
-            case 'events':
-                $channels = $package['channels'];
-                $event    = $package['name'];
-                $data     = $package['data'];
-                foreach ($channels as $channel) {
-                    $socket_id = isset($package['socket_id']) ? isset($package['socket_id']) : null;
-                    $this->publishToClients($app_key, $channel, $event, $data, $socket_id);
-                }
+        foreach ($package['channels'] as $channel){
+//            if (!isset($this->_eventClients[$app_key][$channel])) {
+                $package['app_key'] = $app_key;
+                $this->redis->set(md5(json_encode($package)),0,22800);
+                $this->SendMq('kefu',json_encode($package));
                 return $connection->send('{}');
-            case 'get_channel_info':
-                $info               = isset($_GET['info']) ? explode(',', $_GET['info']) : array();
-                $occupied           = isset($this->_globalData[$app_key][$channel]);
-                $user_count         = $occupied ? count($this->_globalData[$app_key][$channel]['users']) : 0;
-                $subscription_count = $occupied ? $this->_globalData[$app_key][$channel]['subscription_count'] : 0;
-                $channel_info       = array(
-                    'occupied' => $occupied
-                );
-                foreach ($info as $item) {
-                    switch ($item) {
-                        case 'user_count':
-                            $channel_info['user_count'] = $user_count;
-                            break;
-                        case 'subscription_count':
-                            $channel_info['subscription_count'] = $subscription_count;
-                            break;
-                    }
-                }
-                $connection->send(json_encode($channel_info));
-                break;
-            case 'get_channel_users':
-                $id_array = isset($this->_globalData[$app_key][$channel]) ?
-                    array_keys($this->_globalData[$app_key][$channel]['users']) : array();
-                $user_id_array = array();
-                foreach ($id_array as $id) {
-                    $user_id_array[] = array('id' => $id);
-                }
-
-                $connection->send(json_encode($user_id_array));
-                break;
-            default :
-                Http::header("HTTP/1.0 400 Bad Request");
-                return $connection->send('Bad Request');
+//            }
         }
+            switch ($type) {
+                case 'events':
+                    $channels = $package['channels'];
+                    $event    = $package['name'];
+                    $data     = $package['data'];
+                    foreach ($channels as $channel) {
+                        $socket_id = isset($package['socket_id']) ? isset($package['socket_id']) : null;
+                        $this->publishToClients($app_key, $channel, $event, $data, $socket_id);
+                    }
+                    return $connection->send('{}');
+                case 'get_channel_info':
+                    $info               = isset($_GET['info']) ? explode(',', $_GET['info']) : array();
+                    $occupied           = isset($this->_globalData[$app_key][$channel]);
+                    $user_count         = $occupied ? count($this->_globalData[$app_key][$channel]['users']) : 0;
+                    $subscription_count = $occupied ? $this->_globalData[$app_key][$channel]['subscription_count'] : 0;
+                    $channel_info       = array(
+                        'occupied' => $occupied
+                    );
+                    foreach ($info as $item) {
+                        switch ($item) {
+                            case 'user_count':
+                                $channel_info['user_count'] = $user_count;
+                                break;
+                            case 'subscription_count':
+                                $channel_info['subscription_count'] = $subscription_count;
+                                break;
+                        }
+                    }
+                    $connection->send(json_encode($channel_info));
+                    break;
+                case 'get_channel_users':
+                    $id_array = isset($this->_globalData[$app_key][$channel]) ?
+                        array_keys($this->_globalData[$app_key][$channel]['users']) : array();
+                    $user_id_array = array();
+                    foreach ($id_array as $id) {
+                        $user_id_array[] = array('id' => $id);
+                    }
+
+                    $connection->send(json_encode($user_id_array));
+                    break;
+                default :
+                    Http::header("HTTP/1.0 400 Bad Request");
+                    return $connection->send('Bad Request');
+            }
+    }
+
+    /** 推送消息到 MQ
+     * @return void
+     */
+    public function SendMq($key,$data)
+    {
+        // 生成唯一标识符
+        $messageId = md5($data);
+        (new Client(RABBITMQ))->connect()->then(function (Client $client) {
+            return $client->channel();
+        })->then(function (Channel $channel) use($key) {
+            return $channel->exchangeDeclare($key, 'fanout')->then(function () use ($channel) {
+                return $channel;
+            });
+        })->then(function (Channel $channel){
+            return $channel->confirmSelect()->then(function () use($channel){
+               return $channel;
+            });
+        })->then(function (Channel $channel) use ($data,$key,$messageId) {
+            $this->redis->incr(md5($data),1);
+            return $channel->publish($data, ['message_id' => $messageId], $key)->then(function () use ($key,$data) {
+                echo " [x] Sent '{$data}'\n";
+            },
+                function (\Exception $e) use ($key,$data) {
+                    echo " [x] Failed to send '{$data}': ", $e->getMessage(), "\n";
+                    if ($this->redis->get(md5($data)) <3){
+                        $this->SendMq($key,$data);
+                    }
+                })->then(function () use ($channel) {
+                return $channel;
+            });
+        })->then(function (Channel $channel) use ($data) {
+            $client = $channel->getClient();
+            return $channel->close()->then(function () use ($client) {
+                return $client;
+            });
+        })->then(function (Client $client) {
+            $client->disconnect();
+        });
     }
 
     public function webHookCheck()
@@ -900,4 +1026,5 @@ class Pusher extends Worker
         Timer::add(10, array($client, 'close'), null, false);
         $client->connect();
     }
+
 }

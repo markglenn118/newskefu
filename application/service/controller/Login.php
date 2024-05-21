@@ -6,6 +6,7 @@ namespace app\service\controller;
 use app\service\model\Admins;
 use app\service\model\AdminLog;
 use app\service\model\Business;
+use think\Cache;
 use think\Controller;
 use think\captcha\Captcha;
 use think\config;
@@ -104,11 +105,14 @@ class Login extends Controller
         }
         // 获取登陆数据
         $login = $admin->getData();
-        Loader::import('google.Google', VENDOR_PATH,'.php');
-        $Googl = new \Google();
-        $checkResult = $Googl->verifyCode($login['google_secret'], trim($post["google_code"]), 0); 
-        if (!$checkResult) {
-            $this->error('谷歌验证失败');
+        if (!empty($login['google_bind'])){
+            if (empty($post["google_code"])) $this->error('谷歌验证码必填！');
+            Loader::import('google.Google', VENDOR_PATH,'.php');
+            $Googl = new \Google();
+            $checkResult = $Googl->verifyCode($login['google_secret'], trim($post["google_code"]), 0);
+            if (!$checkResult) {
+                $this->error('谷歌验证失败');
+            }
         }
         // 删掉登录用户的敏感信息
         unset($login['password']);
@@ -120,9 +124,10 @@ class Login extends Controller
         $business = Business::get($_SESSION['Msg']['business_id']);
         $_SESSION['Msg']['business'] = $business->getData();
         $_SESSION['random_number'] = $random_number;
-        $expire = 7 * 24 * 60 * 60;
-        $service_token = $common->cpEncode($login['user_name'], AIKF_SALT, $expire);
+        $expire=CACHE_VISIT;
+        $service_token = $common->cpEncode($login['user_name'],AIKF_SALT,$expire);
         Cookie::set('service_token', $service_token, $expire);
+        Cache::store('redis')->set('service_token:'.$login['service_id'],$service_token,$expire);
         $ismoblie = $common->isMobile();
         $this->record_log('登录成功');
         if ($ismoblie) {
@@ -175,6 +180,7 @@ class Login extends Controller
         Cookie::delete('service_token');
         if (isset($_SESSION['Msg'])) {
             $login = $_SESSION['Msg'];
+            \think\Cache::store('redis')->rm('service_token:'.$_SESSION['Msg']['service_id']);
             // 更改状态
             Cookie::delete('service_token');
             setCookie("cu_com", "", time() - 60);

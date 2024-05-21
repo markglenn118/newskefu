@@ -3,7 +3,9 @@
 
 namespace app\service\controller;
 
+use app\service\model\Sentence;
 use app\service\model\Service;
+use app\service\model\WoliveReply;
 use think\Db;
 use app\service\model\Business;
 use think\File;
@@ -43,7 +45,39 @@ class Services extends Base
             $pass = md5($post['user_name'] . "hjkj" . $post["password"]);
             $post['password'] = $pass;
             $res = Service::field(true)->insert($post);
-            if ($res) $this->success('添加成功');
+            if ($res){
+                $service = Service::where('user_name', $post['user_name'])->find();
+                //添加问候语
+                $sentenceData = Sentence::where('service_id',$_SESSION['Msg']['service_id'])->select();
+                if ($sentenceData){
+                    $insertData = [];
+                    foreach ($sentenceData as $value){
+                        $insertData[] = [
+                            'content'=> $value['content'],
+                            'service_id'=> $service['service_id'],
+                            'state'=> $value['state'],
+                            'lang'=> $value['lang'],
+                        ];
+                    }
+                    (new Sentence())->saveAll($insertData);
+                }
+
+                //添加快捷回复
+                $data = WoliveReply::where('service_id',$_SESSION['Msg']['service_id'])->select();
+                if ($data){
+                    $insertData = [];
+                    foreach ($data as $value){
+                        $insertData[] = [
+                            'word'=> $value['word'],
+                            'service_id'=> $service['service_id'],
+                            'tag'=> $value['tag'],
+                        ];
+                    }
+                    (new WoliveReply())->saveAll($insertData);
+                }
+
+             $this->success('添加成功');
+            }
             $this->error('添加失败！');
         }
         $group = Db::name("wolive_group")->select();
@@ -141,26 +175,32 @@ class Services extends Base
         return $this->fetch();
     }
     public function reset(){
-        if ($this->request->isAjax()) {
-            $post = $this->request->post();
+//        if ($this->request->isAjax()) {
             $service = Service::where('service_id',$this->request->get('service_id'))->find();
+            $updateService = Service::where('service_id',$_SESSION['Msg']['service_id'])->find();
             if(!$service){
                 $this->error('数据不存在');
             }
-            if($service['level'] == 'service'){
+            if($updateService['level'] == 'service' && $this->request->get('service_id') !=$_SESSION['Msg']['service_id']){
                 $this->error('权限不足');
             }
-            Loader::import('google.Google', VENDOR_PATH,'.php');
-            $Googl = new \Google();
-            $secret = $Googl->createSecret();
-            $google_url = $Googl->getQRCodeGoogleUrl(trim($post['nickname']),$secret);
-            if(Service::where("service_id",$this->request->get('service_id'))->update(['google_url'=>$google_url,'google_secret'=>$secret,'another_name'=>trim($post['nickname'])])){
+            $update = ['google_bind'=>0];
+//            if (trim($post['nickname']) != $service['another_name']){
+//                Loader::import('google.Google', VENDOR_PATH,'.php');
+//                $Googl = new \Google();
+//                $secret = $Googl->createSecret();
+//                $google_url = $Googl->getQRCodeGoogleUrl(trim($post['nickname']),$secret);
+//                $update = ['google_bind'=>0,'google_url'=>$google_url,'google_secret'=>$secret,'another_name'=>trim($post['nickname'])];
+//            }
+            if(Service::where("service_id",$this->request->get('service_id'))->update($update)){
                 $this->log('[客服账号]重置客服【'.$service['nick_name'].'】的谷歌二维码');
                 $this->success('重置谷歌验证码成功');
                 
             }
             $this->error('修改失败！');
-        }
-        return $this->fetch();
+//        }
+//        $service = Service::where('service_id',$this->request->get('service_id'))->find();
+//        $this->assign('another_name', $service['another_name']);
+//        return $this->fetch();
     }
 }
