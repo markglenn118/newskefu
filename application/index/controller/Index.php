@@ -186,19 +186,12 @@ class Index extends Controller
         $visiter_id = htmlspecialchars($arr2['visiter_id']);
         if ($visiter_id === '') {
             $visiter_id=cookie('visiter_id');
-            $cacheVisitId = \think\Cache::store('redis')->get('visiter_id:'.$visiter_id);
-            if (!$cacheVisitId) {
+            if (!$visiter_id) {
                 $visiter_id = bin2hex(pack('N', time())).strtolower($common->rand(8));
-                cookie('visiter_id', $visiter_id, CACHE_VISIT);
-                \think\Cache::store('redis')->set('visiter_id:'.$visiter_id,$visiter_id,CACHE_VISIT);
-            }
-        }else{
-            $cacheVisitId = \think\Cache::store('redis')->get('visiter_id:'.$visiter_id);
-            if (!$cacheVisitId) {
-                \think\Cache::store('redis')->set('visiter_id:'.$visiter_id,$visiter_id,CACHE_VISIT);
-                cookie('visiter_id', $visiter_id, CACHE_VISIT);
+                cookie('visiter_id', $visiter_id, 28800);
             }
         }
+
         // 判断是否访问过
         if ($visiter_id) {
 

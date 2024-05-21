@@ -10,6 +10,7 @@ namespace app\backend\controller;
 use think\Controller;
 use app\backend\model\Admins;
 use app\service\model\AdminLog;
+use think\Cookie;
 
 class Base extends Controller
 {
@@ -23,6 +24,13 @@ class Base extends Controller
         }
         $random_number = Admins::table("wolive_admin")->where('id',session('admin_user_id'))->value('random_number');
         if($random_number != session('random_number')){
+            session('admin_user_name', null);
+            session('admin_user_id', null);
+            session('random_number', null);
+            $this->redirect(url('/backend/login/index'));
+        }
+        $redisToken = \think\Cache::store('redis')->get('service_token:'.session('admin_user_id'));
+        if (empty($redisToken)){
             session('admin_user_name', null);
             session('admin_user_id', null);
             session('random_number', null);

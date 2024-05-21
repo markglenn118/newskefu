@@ -130,20 +130,13 @@ class Index extends Controller
         $visiter_id = $arr2['visiter_id'];
         if (trim($visiter_id) == '') {
             $visiter_id=cookie('visiter_id');
-            $cacheVisitId = \think\Cache::store('redis')->get('visiter_id:'.$visiter_id);
-            if (!$cacheVisitId) {
+            if (!$visiter_id) {
                 $visiter_id = bin2hex(pack('N', time())).strtolower($common->rand(8));
-                cookie('visiter_id', $visiter_id, CACHE_VISIT);
-                \think\Cache::store('redis')->set('visiter_id:'.$visiter_id,$visiter_id,CACHE_VISIT);
+                cookie('visiter_id', $visiter_id, 28800);
             }
         }else{
-            $cacheVisitId = \think\Cache::store('redis')->get('visiter_id:'.$visiter_id);
-            if (!$cacheVisitId) {
-                \think\Cache::store('redis')->set('visiter_id:'.$visiter_id,$visiter_id,CACHE_VISIT);
-                cookie('visiter_id', $visiter_id, CACHE_VISIT);
-            }
+            cookie('visiter_id', $visiter_id, 28800);
         }
-
         if ($visiter_id) {
 
             if (!isset($_COOKIE['product_id'])) {

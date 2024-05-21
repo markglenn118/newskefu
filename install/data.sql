@@ -572,4 +572,3 @@ INSERT INTO `wolive_admin_permission` VALUES (26, 0, '快捷回复设置', '/ser
 
 SET FOREIGN_KEY_CHECKS = 1;
 
-INSERT INTO `wolive_storage` (`id`, `admin_id`, `type`, `config`, `status`) VALUES (1, 1, 5, '{\"path\":\"ftp://107.187.39.13\",\"port\":21,\"username\":\"testftp\",\"password\":\"XPFLwRhHa8xfyLCy\",\"domain\":\"http://107.187.39.13:8081/\"}', 1);

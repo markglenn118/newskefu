@@ -412,7 +412,7 @@ function putfile() {
     let  video_suffix = ['avi','wmv','mpg','mpeg','mov','rm','swf','flv','mp4','ram'];
     let suffix = [...img_suffix,...video_suffix];
     if (!suffix.includes(debugs)) {
-        layer.msg("只支持上传图片和视频6", {icon: 2}); return;
+        layer.msg("只支持上传图片和视频", {icon: 2}); return;
     }
 
         var myDate = new Date();

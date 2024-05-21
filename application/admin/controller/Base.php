@@ -60,6 +60,13 @@ class Base extends Controller
         if (empty($_SESSION['Msg']) || !isset($_SESSION['Msg'])) {
             $this->redirect('service/login/index');
         }
+        $redisToken = \think\Cache::store('redis')->get('service_token:'.$_SESSION['Msg']['service_id']);
+        if (empty($redisToken)){
+            Cookie::delete('service_token');
+            setCookie("cu_com", "", time() - 60);
+            session('Msg',null);
+            $this->error('系统已过期');
+        }
 
         $login = $_SESSION['Msg'];
         $res =Admins::table('wolive_business')->where('id',$login['business_id'])->find();
