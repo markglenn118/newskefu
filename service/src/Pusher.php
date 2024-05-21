@@ -189,7 +189,7 @@ class Pusher extends Worker
             'data'    => $package['data'],
             'channel' => $value
         ));
-        $this->redis->set(md5($data),0);
+        $this->redis->set(md5($data),0,22800);
         foreach ($this->_eventClients[$package['app_key']][$value] as $connection) {
             if ($connection->socketID === $socket_id) {
                 continue;
@@ -731,7 +731,7 @@ class Pusher extends Worker
         foreach ($package['channels'] as $channel){
 //            if (!isset($this->_eventClients[$app_key][$channel])) {
                 $package['app_key'] = $app_key;
-                $this->redis->set(md5(json_encode($package)),0);
+                $this->redis->set(md5(json_encode($package)),0,22800);
                 $this->SendMq('kefu',json_encode($package));
                 return $connection->send('{}');
 //            }

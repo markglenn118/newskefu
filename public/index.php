@@ -59,6 +59,16 @@ define("REDIS", [
         'pwd'=> '1234']
 );
 //访客会话保存时长（秒）
-define('CACHE_VISIT',28800);
+define('CACHE_VISIT',60);
+
+//FTP 服务配置
+define("FTP", [
+        'path'=>'107.187.39.13',
+        'port'=> 21,
+        'username'=> 'testftp',
+        'password'=> 'XPFLwRhHa8xfyLCy',
+        'domain'=> 'http://107.187.39.13:8081/',
+    ]
+);
 // 加载框架引导文件
 require __DIR__ . '/../thinkphp/start.php';
