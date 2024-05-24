@@ -52,7 +52,7 @@ class Login extends Controller
             session('admin_user_name', $login['username']);
             session('admin_user_id', $login['id']);
             session('random_number', $random_number);
-            Cache::store('redis')->set('service_token:'.$login['service_id'],$login['id'],CACHE_VISIT);
+            Cache::store('redis')->set('service_token:'.$login['id'],$login['id'],CACHE_VISIT);
             $this->success('登录成功', url("/backend/index/index"));
         }
     }
