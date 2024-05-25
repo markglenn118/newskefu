@@ -163,9 +163,14 @@ class Login extends Controller
      */
     public function logout()
     {
+        $redis = new \Redis();
+        $redis->connect(REDIS['host'],REDIS['port']);
+        if (!empty(REDIS['pwd'])){
+            $redis->auth(REDIS['pwd']);
+        }
         Cookie::delete('service_token');
       if(isset($_SESSION['Msg'])){
-          \think\Cache::store('redis')->rm('service_token:'.$_SESSION['Msg']['service_id']);
+          $redis->del('service_token:'.$_SESSION['Msg']['service_id']);
                $login = $_SESSION['Msg'];
             // 更改状态
           Cookie::delete('service_token');
