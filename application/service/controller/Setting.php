@@ -40,6 +40,12 @@ class Setting extends Base
     public function sentence()
     {
         if ($this->request->isAjax()) return Sentence::getList();
+        $login = $_SESSION['Msg'];
+        $manage = false;
+        if (empty($login['parent_id'])){
+            $manage = true;
+        }
+        $this->assign('manage', $manage);
         return $this->fetch();
     }
 
